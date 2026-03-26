@@ -12,7 +12,7 @@ import {
   Heart, CalendarDays, ListTodo, Radio, Phone, FileText, ArrowUpRight, TrendingUp
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import MapComponent from '@/components/ui/MapComponent'
 import clsx from 'clsx'
 
@@ -70,7 +70,7 @@ export default function HomePage() {
   )
 
   // ─── Syntax-colored quick actions ─────────────────────────────────────────
-  const quickApps = [
+  const quickApps = useMemo(() => [
     { label: 'Chat',     icon: MessageCircle, color: 'from-blue-500 to-indigo-600',    shadow: 'shadow-blue-500/30',    href: '/chat' },
     { label: 'Dating',   icon: Heart,         color: 'from-pink-500 to-rose-600',      shadow: 'shadow-pink-500/30',    href: '/dating' },
     { label: 'Ride',     icon: Car,           color: 'from-amber-500 to-orange-600',   shadow: 'shadow-amber-500/30',   href: '/rides' },
@@ -83,7 +83,7 @@ export default function HomePage() {
     { label: 'Calls',    icon: Phone,         color: 'from-green-500 to-emerald-600',  shadow: 'shadow-green-500/30',   href: '/calls' },
     { label: 'Coding',   icon: Code2,         color: 'from-cyan-500 to-blue-600',      shadow: 'shadow-cyan-500/30',    href: '/coding' },
     { label: 'More',     icon: Grid,          color: 'from-gray-500 to-slate-600',     shadow: 'shadow-gray-500/30',    href: '/apps' },
-  ]
+  ], [])
 
   // ─── MOBILE VIEW ──────────────────────────────────────────────────────────
   const MobileView = () => (
@@ -96,7 +96,7 @@ export default function HomePage() {
             <h1 className="text-2xl font-black tracking-tight">{user?.name?.split(' ')[0] || 'User'} 👋</h1>
           </div>
           <div className="flex items-center gap-2.5">
-            <Link href="/notifications" prefetch={false} className="relative p-2.5 bg-[var(--bg-card)] rounded-2xl shadow-sm border border-gray-200/30 dark:border-gray-800/30 interactive">
+            <Link href="/notifications" className="relative p-2.5 bg-[var(--bg-card)] rounded-2xl shadow-sm border border-gray-200/30 dark:border-gray-800/30 interactive">
               <Bell size={20} className="text-[var(--syn-variable)]" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--syn-constant)] rounded-full border-2 border-[var(--bg-primary)] text-[9px] font-black text-white flex items-center justify-center animate-bounce">
@@ -104,7 +104,7 @@ export default function HomePage() {
                 </span>
               )}
             </Link>
-            <Link href="/settings" prefetch={false}>
+            <Link href="/settings">
               <div className="w-11 h-11 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--syn-keyword)] to-[var(--syn-function)] flex items-center justify-center text-white font-black text-lg shadow-lg shadow-purple-500/20 interactive">
                 {user?.name?.[0]?.toUpperCase() || 'U'}
               </div>
@@ -129,7 +129,7 @@ export default function HomePage() {
       <section className="px-5 py-3">
         <div className="grid grid-cols-4 gap-3">
           {quickApps.map(item => (
-            <Link key={item.label} href={item.href} prefetch={false} className="flex flex-col items-center gap-2 group">
+            <Link key={item.label} href={item.href} className="flex flex-col items-center gap-2 group">
               <div className={`bg-gradient-to-br ${item.color} p-3 rounded-2xl text-white shadow-lg ${item.shadow} group-active:scale-90 transition-all duration-200`}>
                 <item.icon size={22} />
               </div>
@@ -143,16 +143,16 @@ export default function HomePage() {
       <section className="px-5 py-3 space-y-3">
         <div className="flex justify-between items-center px-1">
           <h2 className="font-black text-sm uppercase tracking-widest">Ride Nearby</h2>
-          <Link href="/rides" prefetch={false} className="text-[10px] font-black text-[var(--syn-string)] bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-xl flex items-center gap-1 interactive">
+          <Link href="/rides" className="text-[10px] font-black text-[var(--syn-string)] bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1 rounded-xl flex items-center gap-1 interactive">
             <Clock size={10}/>2 min
           </Link>
         </div>
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
           {[
-            { name: 'Tesla Model S', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&q=80', price: '$12' },
-            { name: 'BMW i8', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&q=80', price: '$18' }
+            { name: 'Tesla Model S', img: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&q=80', price: '₹120' },
+            { name: 'BMW i8', img: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&q=80', price: '₹180' }
           ].map((car, i) => (
-            <Link href="/rides" prefetch={false} key={i} className="min-w-[220px] bg-[var(--bg-card)] rounded-2xl p-2 shadow-sm border border-gray-200/30 dark:border-gray-800/30 flex items-center gap-3 card-hover">
+            <Link href="/rides" key={i} className="min-w-[220px] bg-[var(--bg-card)] rounded-2xl p-2 shadow-sm border border-gray-200/30 dark:border-gray-800/30 flex items-center gap-3 card-hover">
               <img src={car.img} className="w-18 h-18 rounded-xl object-cover" />
               <div className="flex-1 min-w-0">
                 <p className="font-black text-xs truncate">{car.name}</p>
@@ -174,7 +174,7 @@ export default function HomePage() {
             { name: 'Pizza Hut', time: '20 mins', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80' },
             { name: 'Burger Hub', time: '15 mins', img: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&q=80' }
           ].map((food, i) => (
-            <Link href="/food" prefetch={false} key={i} className="min-w-[180px] bg-[var(--bg-card)] rounded-2xl overflow-hidden shadow-sm border border-gray-200/30 dark:border-gray-800/30 card-hover">
+            <Link href="/food" key={i} className="min-w-[180px] bg-[var(--bg-card)] rounded-2xl overflow-hidden shadow-sm border border-gray-200/30 dark:border-gray-800/30 card-hover">
               <img src={food.img} className="w-full h-24 object-cover" />
               <div className="p-3 flex justify-between items-center">
                 <div>

@@ -94,7 +94,7 @@ export default function MarketplacePage() {
                 </div>
                 <div className="p-5 space-y-1">
                   <h3 className="font-black text-sm dark:text-white truncate group-hover:text-blue-600 transition-colors">{product.title}</h3>
-                  <p className="text-blue-600 font-black text-lg">${product.price}</p>
+                  <p className="text-blue-600 font-black text-lg">₹{product.price}</p>
                   <div className="flex items-center gap-1.5 text-gray-400 text-[10px] font-bold uppercase tracking-widest pt-2">
                     <MapPin size={12} />
                     <span className="truncate">{product.location?.address || 'Local Pick-up'}</span>

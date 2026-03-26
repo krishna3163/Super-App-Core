@@ -53,7 +53,7 @@ export default function ServiceProviderPage() {
               </div>
 
               <div className="text-left md:text-right">
-                <p className="text-3xl font-black text-blue-600 dark:text-blue-400">${provider.pricing.rate}</p>
+                <p className="text-3xl font-black text-blue-600 dark:text-blue-400">₹{provider.pricing.rate}</p>
                 <p className="text-gray-500 text-sm">per {provider.pricing.type === 'hourly' ? 'hour' : 'job'}</p>
               </div>
             </div>

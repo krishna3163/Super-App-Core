@@ -4,10 +4,10 @@ import { Briefcase, Search, Star, MapPin, Filter, MessageCircle } from 'lucide-r
 import Link from 'next/link'
 
 const freelancers = [
-  { id: 1, name: 'Amit Kumar', role: 'Plumber', rating: 4.8, reviews: 156, price: '$20/hr', image: 'https://i.pravatar.cc/150?u=amit' },
-  { id: 2, name: 'Sarah Wilson', role: 'Graphic Designer', rating: 4.9, reviews: 89, price: '$45/hr', image: 'https://i.pravatar.cc/150?u=sarah' },
-  { id: 3, name: 'David Chen', role: 'Electrician', rating: 4.7, reviews: 210, price: '$30/hr', image: 'https://i.pravatar.cc/150?u=david' },
-  { id: 4, name: 'Lisa Ray', role: 'Tutor (Maths)', rating: 5.0, reviews: 45, price: '$25/hr', image: 'https://i.pravatar.cc/150?u=lisa' },
+  { id: 1, name: 'Amit Kumar', role: 'Plumber', rating: 4.8, reviews: 156, price: '₹200/hr', image: 'https://i.pravatar.cc/150?u=amit' },
+  { id: 2, name: 'Sarah Wilson', role: 'Graphic Designer', rating: 4.9, reviews: 89, price: '₹450/hr', image: 'https://i.pravatar.cc/150?u=sarah' },
+  { id: 3, name: 'David Chen', role: 'Electrician', rating: 4.7, reviews: 210, price: '₹300/hr', image: 'https://i.pravatar.cc/150?u=david' },
+  { id: 4, name: 'Lisa Ray', role: 'Tutor (Maths)', rating: 5.0, reviews: 45, price: '₹250/hr', image: 'https://i.pravatar.cc/150?u=lisa' },
 ]
 
 export default function ServicesHubPage() {

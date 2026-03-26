@@ -68,7 +68,7 @@ export default function CartPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                             <h3 className="font-black text-sm dark:text-white truncate">Product ID: {item.productId}</h3>
-                            <p className="text-blue-600 font-black text-lg">${item.price}</p>
+                            <p className="text-blue-600 font-black text-lg">₹{item.price}</p>
                             <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Qty: {item.quantity}</p>
                         </div>
                         <button 
@@ -88,16 +88,16 @@ export default function CartPage() {
                 <div className="space-y-2 border-b dark:border-gray-800 pb-4">
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Subtotal</span>
-                        <span className="font-bold dark:text-white">${subtotal}</span>
+                        <span className="font-bold dark:text-white">₹{subtotal}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Shipping</span>
-                        <span className="font-bold dark:text-white">${shipping}</span>
+                        <span className="font-bold dark:text-white">₹{shipping}</span>
                     </div>
                 </div>
                 <div className="flex justify-between items-center pt-2">
                     <span className="font-black dark:text-white">Total</span>
-                    <span className="text-2xl font-black text-blue-600">${total}</span>
+                    <span className="text-2xl font-black text-blue-600">₹{total}</span>
                 </div>
                 <button 
                     disabled={!cartItems || cartItems.length === 0}

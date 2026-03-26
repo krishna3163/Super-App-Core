@@ -10,7 +10,7 @@ import { updateEmail, updatePassword } from '@/services/authApi'
 import clsx from 'clsx'
 
 export default function SettingsPage() {
-  const { user, appMode, setAppMode } = useAuthStore()
+  const { user, appMode, setAppMode, businessType, setBusinessType } = useAuthStore()
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState('profile')
   const [isUploading, setIsUploading] = useState(false)
@@ -270,10 +270,25 @@ export default function SettingsPage() {
               </div>
               
               {appMode === 'business' && (
-                <div className="space-y-3 mt-4 pt-4 border-t border-emerald-500/10 animate-slide-up">
-                  <p className="text-xs font-black text-[var(--syn-string)] uppercase tracking-widest">✓ Business Features Enabled</p>
+                <div className="space-y-4 mt-4 pt-4 border-t border-emerald-500/10 animate-slide-up">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-[var(--syn-string)] uppercase tracking-widest">Business Type</label>
+                    <select
+                      value={businessType}
+                      onChange={(e) => setBusinessType(e.target.value as any)}
+                      className="w-full bg-[var(--bg-elevated)] border border-gray-200/30 dark:border-gray-800/30 rounded-xl p-3 text-sm outline-none focus:ring-2 ring-[var(--syn-string)]/20 transition-all font-bold text-[var(--syn-keyword)]"
+                    >
+                      <option value="product_seller">📦 Product Seller</option>
+                      <option value="rider">🚗 Ride Driver</option>
+                      <option value="restaurant_manager">🍔 Restaurant Manager</option>
+                      <option value="hotel_manager">🏨 Hotel Manager</option>
+                      <option value="freelancer">💻 Freelancer</option>
+                      <option value="other">🛠️ Other Business</option>
+                    </select>
+                  </div>
+                  <p className="text-xs font-black text-[var(--syn-string)] uppercase tracking-widest mt-4">✓ Features Enabled</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {['Dashboard', 'Product Management', 'Order Tracking', 'Revenue Analytics', 'Customer Data', 'Store Settings'].map(feature => (
+                    {['Dashboard', 'Product/Service Manager', 'Tracking & Analytics', 'Customers'].map(feature => (
                       <div key={feature} className="flex items-center gap-2 text-xs text-[var(--syn-comment)] bg-[var(--bg-elevated)] p-2.5 rounded-xl">
                         <CheckCircle2 size={14} className="text-[var(--syn-string)] shrink-0" />
                         {feature}
@@ -281,7 +296,7 @@ export default function SettingsPage() {
                     ))}
                   </div>
                   <p className="text-[10px] text-[var(--syn-comment)] italic mt-2">
-                    Business apps will appear in the <span className="text-[var(--syn-type)] font-bold">Apps</span> section.
+                    Business apps will appear in the <span className="text-[var(--syn-type)] font-bold">Apps</span> section. Ride tracking and approvals go live.
                   </p>
                 </div>
               )}

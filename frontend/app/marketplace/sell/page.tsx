@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Upload, MapPin, DollarSign, Tag, CheckCircle2, X } from 'lucide-react'
+import { ArrowLeft, Upload, MapPin, IndianRupee, Tag, CheckCircle2, X } from 'lucide-react'
 import useAuthStore from '@/store/useAuthStore'
 import { useMutation } from '@tanstack/react-query'
 import { createProduct } from '@/services/apiServices'
@@ -68,7 +68,7 @@ export default function SellItemPage() {
 
     publishProduct({
       ...formData,
-      seller: user.id,
+      sellerId: user.id,
       images, // base64 or urls
       location: { address: formData.location },
       price: Number(formData.price)
@@ -158,13 +158,13 @@ export default function SellItemPage() {
                     <div>
                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Price</label>
                         <div className="relative">
-                            <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600" size={20} />
+                            <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600" size={20} />
                             <input 
                                 required
                                 type="number" 
                                 value={formData.price}
                                 onChange={e => setFormData({...formData, price: e.target.value})}
-                                placeholder="0.00"
+                                placeholder="₹0.00"
                                 className="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-2xl py-4 pl-12 pr-4 outline-none dark:text-white font-black text-xl transition-all"
                             />
                         </div>

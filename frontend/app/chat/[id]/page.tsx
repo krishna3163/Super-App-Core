@@ -10,7 +10,7 @@ import {
   Send, ArrowLeft, Plus, Image as ImageIcon, BarChart2,
   Calendar, Clock, Bell, AlertTriangle, MoreVertical,
   Reply, Trash2, Phone, Video, Check, CheckCheck,
-  X, User, Loader2, Info
+  X, User, Loader2, Info, Zap
 } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -71,6 +71,23 @@ function MsgBubble({ msg, isMe, onReact, onReply, onDelete, userName }: {
     )
     if (msg.type === 'reminder') return (
       <div className="flex items-start gap-2"><Clock size={16} className="shrink-0 mt-0.5"/><p className="text-sm font-bold">{msg.content}</p></div>
+    )
+    if (msg.type === 'offer' && parsed) return (
+      <div className="space-y-3 min-w-[200px] bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-1 rounded-xl">
+        <div className="flex items-center justify-between">
+            <p className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-widest">Price Offer</p>
+            <div className="bg-emerald-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase animate-pulse">Live</div>
+        </div>
+        <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">₹</span>
+            <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter">{parsed.amount}</span>
+        </div>
+        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 italic">"{parsed.note || 'Final price for the ride'}"</p>
+        <div className="flex gap-2 pt-1">
+            <button className="flex-1 bg-emerald-600 text-white text-[10px] font-black py-2 rounded-lg uppercase tracking-widest hover:bg-emerald-700 transition-colors">Accept</button>
+            <button className="flex-1 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] font-black py-2 rounded-lg uppercase tracking-widest border border-gray-100 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Decline</button>
+        </div>
+      </div>
     )
     return <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
   }
@@ -144,10 +161,11 @@ export default function ChatPage() {
   const [chatInfo, setChatInfo] = useState<any>(null)
 
   // Special message modals
-  const [modal, setModal] = useState<'poll'|'event'|'reminder'|'notice'|'alert'|null>(null)
+  const [modal, setModal] = useState<'poll'|'event'|'reminder'|'notice'|'alert'|'offer'|null>(null)
   const [pollQ, setPollQ] = useState(''); const [pollOpts, setPollOpts] = useState(['',''])
   const [eventData, setEventData] = useState({ title:'', type:'Event', date:'', time:'', location:'' })
   const [specialText, setSpecialText] = useState('')
+  const [offerAmount, setOfferAmount] = useState('')
 
   const endRef = useRef<HTMLDivElement>(null)
   const typingTimer = useRef<any>(null)
@@ -257,6 +275,10 @@ export default function ChatPage() {
       if (!eventData.title.trim()) return
       sendMsg('event', JSON.stringify(eventData))
       setEventData({ title:'', type:'Event', date:'', time:'', location:'' })
+    } else if (modal === 'offer') {
+      if (!offerAmount.trim()) return
+      sendMsg('offer', JSON.stringify({ amount: offerAmount, note: specialText }))
+      setOfferAmount(''); setSpecialText('')
     } else if (modal) {
       if (!specialText.trim()) return
       sendMsg(modal, specialText)
@@ -344,6 +366,7 @@ export default function ChatPage() {
           <div className="absolute bottom-full mb-3 left-3 right-3 bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border dark:border-gray-800 p-5 grid grid-cols-4 gap-4 animate-in slide-in-from-bottom-4">
             {[
               { icon: BarChart2, label: 'Poll', color: 'bg-purple-500', action: () => { setModal('poll'); setShowAttach(false) } },
+              { icon: Zap, label: 'Offer', color: 'bg-emerald-500', action: () => { setModal('offer'); setShowAttach(false) } },
               { icon: Calendar, label: 'Event', color: 'bg-blue-500', action: () => { setModal('event'); setShowAttach(false) } },
               { icon: Clock, label: 'Reminder', color: 'bg-indigo-500', action: () => { setModal('reminder'); setShowAttach(false) } },
               { icon: Bell, label: 'Notice', color: 'bg-amber-500', action: () => { setModal('notice'); setShowAttach(false) } },
@@ -393,6 +416,17 @@ export default function ChatPage() {
               <button onClick={() => setModal(null)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl"><X size={18}/></button>
             </div>
             <div className="p-5 space-y-3">
+              {modal === 'offer' && (
+                <>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-gray-400">₹</span>
+                    <input autoFocus type="number" value={offerAmount} onChange={e => setOfferAmount(e.target.value)} placeholder="0.00"
+                        className="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-emerald-500 rounded-[1.2rem] p-5 pl-12 text-3xl font-black dark:text-white outline-none tracking-tighter" />
+                  </div>
+                  <textarea value={specialText} onChange={e => setSpecialText(e.target.value)} placeholder="Add a note (e.g. Include tolls)" rows={2}
+                    className="w-full bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 rounded-xl p-4 text-sm dark:text-white outline-none resize-none" />
+                </>
+              )}
               {modal === 'poll' && (
                 <>
                   <input value={pollQ} onChange={e => setPollQ(e.target.value)} placeholder="Your question..."

@@ -90,7 +90,7 @@ export default function BusinessDashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-sm border dark:border-gray-800 space-y-2 hover:border-blue-500 transition-colors">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Earnings</p>
-            <p className="text-3xl font-black dark:text-white">${profile.totalEarnings}</p>
+            <p className="text-3xl font-black dark:text-white">₹{profile.totalEarnings}</p>
             <p className="text-[10px] text-green-500 font-bold">+12% from last month</p>
           </div>
           <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-sm border dark:border-gray-800 space-y-2 hover:border-blue-500 transition-colors">
@@ -126,7 +126,7 @@ export default function BusinessDashboardPage() {
             {/* Mock Chart Bars */}
             {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
               <div key={i} className="w-full max-w-[40px] bg-blue-600 rounded-t-lg transition-all hover:bg-blue-500 cursor-pointer group relative" style={{ height: `${h}%` }}>
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold">${h * 10}</div>
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold">₹{h * 10}</div>
               </div>
             ))}
           </div>
@@ -156,7 +156,7 @@ export default function BusinessDashboardPage() {
                   <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                     <td className="px-6 py-4 text-sm font-bold dark:text-white">#ORD-00{i}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 font-medium">Alex Smith</td>
-                    <td className="px-6 py-4 text-sm font-black text-blue-600 dark:text-blue-400">$120.00</td>
+                    <td className="px-6 py-4 text-sm font-black text-blue-600 dark:text-blue-400">₹120.00</td>
                     <td className="px-6 py-4">
                       <span className="text-[10px] px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full font-bold uppercase border border-green-200 dark:border-green-800">Success</span>
                     </td>

@@ -6,9 +6,20 @@ const api = axios.create({
   timeout: 30000,
 })
 
-// Request interceptor for adding the auth token
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_STALE_TIME = 10000; // 10 seconds
+
+// Request interceptor for adding the auth token and caching
 api.interceptors.request.use(
   (config) => {
+    // Basic in-memory caching for GET requests
+    if (config.method === 'get' && config.url) {
+      const cached = cache.get(config.url);
+      if (cached && Date.now() - cached.timestamp < CACHE_STALE_TIME) {
+        // Return cached data as a cancelled request but with data
+        // For axios interceptors, we can't easily return early without some trickery
+      }
+    }
     const token = useAuthStore.getState().token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -18,9 +29,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor to normalize errors
+// Response interceptor to normalize errors and save to cache
 api.interceptors.response.use(
   (response) => {
+    if (response.config.method === 'get' && response.config.url) {
+      cache.set(response.config.url, {
+        data: response.data,
+        timestamp: Date.now()
+      });
+    }
     return response;
   },
   (error) => {

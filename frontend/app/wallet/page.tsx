@@ -142,7 +142,7 @@ export default function WalletPage() {
             
             <div className="mb-8">
               <p className="text-blue-100 text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Available Balance</p>
-              <h2 className="text-5xl font-black tracking-tighter">${profile?.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h2>
+              <h2 className="text-5xl font-black tracking-tighter">₹{profile?.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h2>
             </div>
 
             <div className="flex gap-4">
@@ -185,7 +185,7 @@ export default function WalletPage() {
                 </div>
                 <div className="text-right">
                     <p className={`font-black text-sm ${tx.receiverId === user?.id ? 'text-green-600' : 'text-slate-800 dark:text-white'}`}>
-                        {tx.receiverId === user?.id ? '+' : '-'}${tx.amount.toFixed(2)}
+                        {tx.receiverId === user?.id ? '+' : '-'}₹{tx.amount.toFixed(2)}
                     </p>
                     <p className="text-[8px] font-black text-gray-300 uppercase">{tx.type}</p>
                 </div>
@@ -206,7 +206,7 @@ export default function WalletPage() {
 
                   <div className="space-y-6">
                       <div className="relative">
-                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-3xl font-black text-gray-300">$</span>
+                          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-3xl font-black text-gray-300">₹</span>
                           <input 
                               type="number"
                               value={amount}
@@ -223,7 +223,7 @@ export default function WalletPage() {
                                 onClick={() => setAmount(val.toString())}
                                 className="py-3 bg-slate-100 dark:bg-gray-800 rounded-2xl font-black text-sm hover:bg-blue-600 hover:text-white transition-all"
                               >
-                                  +${val}
+                                  +₹{val}
                               </button>
                           ))}
                       </div>
@@ -261,7 +261,7 @@ export default function WalletPage() {
                           type="number"
                           value={amount}
                           onChange={(e) => setAmount(e.target.value)}
-                          placeholder="Amount ($)"
+                           placeholder="Amount (₹)"
                           className="w-full bg-slate-50 dark:bg-gray-800 border-none rounded-2xl py-4 px-6 font-bold outline-none dark:text-white"
                       />
                       <input 
