@@ -1,0 +1,283 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: ../Dockerfile.node
+    ports:
+      - "5050:5050"
+    environment:
+      - PORT=5050
+      - JWT_SECRET=super_secret_for_super_app
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - USER_SERVICE_URL=http://user-service:5002
+      - CHAT_SERVICE_URL=http://chat-service:5003
+      - SNAP_SERVICE_URL=http://snap-service:5031
+      - SOCIAL_SERVICE_URL=http://social-service:5004
+      - DASHBOARD_SERVICE_URL=http://dashboard-service:5024
+      - SETTINGS_SERVICE_URL=http://settings-service:5027
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5013
+      - PAYMENT_SERVICE_URL=http://payment-service:5032
+      - MARKETPLACE_SERVICE_URL=http://marketplace-service:5008
+      - CART_SERVICE_URL=http://cart-service:5035
+      - ORDER_SERVICE_URL=http://order-service:5036
+      - RIDE_SERVICE_URL=http://ride-service:5009
+      - FOOD_SERVICE_URL=http://food-service:5010
+      - DATING_SERVICE_URL=http://dating-service:5007
+      - PROFESSIONAL_SERVICE_URL=http://professional-service:5006
+      - PRODUCTIVITY_SERVICE_URL=http://productivity-service:5011
+      - AI_SERVICE_URL=http://ai-service:5033
+      - SUPER_COMMUNICATION_SERVICE_URL=http://super-communication-service:5028
+      - GLOBAL_SEARCH_SERVICE_URL=http://global-search-service:5025
+      - ADVANCED_INTERACTIONS_SERVICE_URL=http://advanced-interactions-service:5029
+    depends_on:
+      - auth-service
+      - user-service
+      - chat-service
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5001
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+      - JWT_SECRET=super_secret_for_super_app
+    depends_on:
+      - mongodb
+
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5002
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  chat-service:
+    build:
+      context: ./services/chat-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5003
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+
+  social-service:
+    build:
+      context: ./services/social-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5004
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  professional-service:
+    build:
+      context: ./services/professional-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5006
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  dating-service:
+    build:
+      context: ./services/dating-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5007
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  marketplace-service:
+    build:
+      context: ./services/marketplace-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5008
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  ride-service:
+    build:
+      context: ./services/ride-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5009
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  food-service:
+    build:
+      context: ./services/food-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5010
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  productivity-service:
+    build:
+      context: ./services/productivity-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5011
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5013
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  dashboard-service:
+    build:
+      context: ./services/dashboard-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5024
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  global-search-service:
+    build:
+      context: ./services/global-search-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5025
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  settings-service:
+    build:
+      context: ./services/settings-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5027
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  super-communication-service:
+    build:
+      context: ./services/super-communication-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5028
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+
+  advanced-interactions-service:
+    build:
+      context: ./services/advanced-interactions-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5029
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  snap-service:
+    build:
+      context: ./services/snap-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5031
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5032
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  ai-service:
+    build:
+      context: ./services/ai-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5033
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  cart-service:
+    build:
+      context: ./services/cart-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5035
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: ../../Dockerfile.node
+    environment:
+      - PORT=5036
+      - MONGO_URI=mongodb://root:password@mongodb:27017/superapp?authSource=admin
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5050/api
+    depends_on:
+      - api-gateway
+
+volumes:
+  mongodb_data:
+  redis_data:

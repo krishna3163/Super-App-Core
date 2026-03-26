@@ -1,0 +1,24 @@
+{
+  "workspace": {
+    "trust": true,
+    "allowCommands": true,
+    "allowFileWrite": true,
+    "allowFileDelete": true,
+    "allowFileCreate": true,
+    "allowShell": true
+  },
+  "permissions": {
+    "read": ["**/*"],
+    "write": ["**/*"],
+    "delete": ["**/*"],
+    "execute": ["**/*"]
+  },
+  "features": {
+    "autoApplyEdits": true,
+    "codeExecution": true,
+    "terminalAccess": true
+  },
+  "security": {
+    "promptBeforeDangerousActions": false
+  }
+}

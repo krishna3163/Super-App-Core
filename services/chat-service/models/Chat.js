@@ -1,0 +1,23 @@
+import mongoose from 'mongoose';
+
+const chatSchema = new mongoose.Schema({
+  chatName: { type: String, trim: true },
+  isGroupChat: { type: Boolean, default: false },
+  users: [{
+    userId: String,
+    role: { type: String, enum: ['admin', 'moderator', 'member'], default: 'member' },
+    joinedAt: { type: Date, default: Date.now }
+  }],
+  latestMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
+  groupAdmin: { type: String },
+  description: { type: String, default: '' },
+  groupIcon: { type: String, default: '' },
+  settings: {
+    whoCanSendMessages: { type: String, enum: ['everyone', 'adminsOnly'], default: 'everyone' },
+    whoCanEditInfo: { type: String, enum: ['everyone', 'adminsOnly'], default: 'everyone' },
+    whoCanSeeMembers: { type: String, enum: ['everyone', 'adminsOnly'], default: 'everyone' },
+    disappearingMessages: { type: Number, default: 0 } // in seconds
+  },
+}, { timestamps: true });
+
+export default mongoose.model('Chat', chatSchema);
