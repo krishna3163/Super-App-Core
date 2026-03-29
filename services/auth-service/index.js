@@ -80,11 +80,16 @@ app.use(handleErrors);
 
 // Connect DB and Start Server
 if (process.env.NODE_ENV !== 'test') {
-  connectDB().then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Auth Service running on port ${PORT}`);
+  connectDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`🚀 Auth Service running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Failed to connect to DB:', err.message);
+      process.exit(1);
     });
-  });
 }
 
 export default app;

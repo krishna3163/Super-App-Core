@@ -7,9 +7,10 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    return conn;
   } catch (error) {
-    console.error(`⚠️ MongoDB Connection Error (Continuing in offline mode): ${error.message}`);
-    // Allow service to run without MongoDB for Supabase testing
+    console.error(`⚠️ MongoDB Connection Error: ${error.message}`);
+    throw error;
   }
 };
 
