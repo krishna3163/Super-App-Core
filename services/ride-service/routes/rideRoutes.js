@@ -5,6 +5,7 @@ const router = express.Router();
 
 // User side
 router.post('/book', rideController.bookRide);
+router.post('/estimates', rideController.getFareEstimates);
 router.get('/history/:userId', rideController.getRideHistory);
 router.get('/active/:userId', rideController.getActiveRide);
 

@@ -25,10 +25,12 @@ interface AuthState {
   user: User | null
   token: string | null
   appMode: AppMode
+  businessEnabled: boolean
   businessType: BusinessType
   activities: Activity[]
   setAuth: (user: User, token: string) => void
   setAppMode: (mode: AppMode) => void
+  setBusinessEnabled: (enabled: boolean) => void
   setBusinessType: (type: BusinessType) => void
   addActivity: (activity: Activity) => void
   logout: () => void
@@ -40,15 +42,17 @@ const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       appMode: 'user',
+        businessEnabled: false,
       businessType: 'product_seller',
       activities: [],
       setAuth: (user, token) => set({ user, token }),
       setAppMode: (appMode) => set({ appMode }),
+        setBusinessEnabled: (businessEnabled) => set({ businessEnabled }),
       setBusinessType: (businessType) => set({ businessType }),
       addActivity: (activity) => set((state) => ({ 
           activities: [activity, ...state.activities].slice(0, 10) 
       })),
-      logout: () => set({ user: null, token: null, appMode: 'user', businessType: 'product_seller', activities: [] }),
+        logout: () => set({ user: null, token: null, appMode: 'user', businessEnabled: false, businessType: 'product_seller', activities: [] }),
     }),
     {
       name: 'super-app-auth',

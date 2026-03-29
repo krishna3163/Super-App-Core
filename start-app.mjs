@@ -7,12 +7,16 @@ const services = [
   'services/user-service',
   'services/chat-service',
   'services/social-service',
+  'services/story-service',
   'services/snap-service',
-  'services/payment-service',
-  'services/settings-service',
+  'services/ride-service',
+  'services/food-service',
+  'services/dating-service',
+  'services/game-service',
+  'services/hotel-service',
   'services/notification-service',
-  'services/dashboard-service',
-  'services/ai-service',
+  'services/global-search-service',
+  'services/business-dashboard-service',
   'frontend'
 ];
 
@@ -36,12 +40,8 @@ const startService = (servicePath) => {
   });
 };
 
-// Install dependencies first (optional, but good for first run)
-// For speed, I'll assume they are installed or handled manually if this fails.
-// But let's try to just start them.
-
 services.forEach(service => {
   startService(service);
 });
 
-console.log('✅ All services triggered. Check individual outputs.');
+console.log('✅ All core services triggered. Check individual outputs.');

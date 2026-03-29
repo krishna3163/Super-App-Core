@@ -5,15 +5,18 @@ import useAuthStore from '@/store/useAuthStore'
 import api from '@/services/api'
 import { Timer, Search, XCircle, Heart, UserX } from 'lucide-react'
 import { io, Socket } from 'socket.io-client'
+import { useSearchParams } from 'next/navigation'
 
 export default function RandomChatPage() {
   const { user } = useAuthStore()
+  const searchParams = useSearchParams()
   const [session, setSession] = useState<any>(null)
   const [status, setStatus] = useState<'idle' | 'searching' | 'connected' | 'finished'>('idle')
   const [timeLeft, setTimeLeft] = useState(60)
   const [messages, setMessages] = useState<any[]>([])
   const [inputText, setInputText] = useState('')
   const socketRef = useRef<Socket | null>(null)
+  const autoStartedRef = useRef(false)
 
   useEffect(() => {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5050'
@@ -69,6 +72,14 @@ export default function RandomChatPage() {
       setStatus('idle')
     }
   }
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    if (!autoStartedRef.current && user?.id && status === 'idle' && (mode === 'micro_dating' || mode === 'random_chat')) {
+      autoStartedRef.current = true
+      findMatch(mode as 'random_chat' | 'micro_dating')
+    }
+  }, [searchParams, user?.id, status])
 
   const skipMatch = async () => {
     if (session?._id || session?.sessionId) {

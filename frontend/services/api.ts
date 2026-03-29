@@ -9,17 +9,9 @@ const api = axios.create({
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_STALE_TIME = 10000; // 10 seconds
 
-// Request interceptor for adding the auth token and caching
+// Request interceptor for adding the auth token
 api.interceptors.request.use(
   (config) => {
-    // Basic in-memory caching for GET requests
-    if (config.method === 'get' && config.url) {
-      const cached = cache.get(config.url);
-      if (cached && Date.now() - cached.timestamp < CACHE_STALE_TIME) {
-        // Return cached data as a cancelled request but with data
-        // For axios interceptors, we can't easily return early without some trickery
-      }
-    }
     const token = useAuthStore.getState().token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -29,17 +21,9 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor to normalize errors and save to cache
+// Response interceptor to normalize errors
 api.interceptors.response.use(
-  (response) => {
-    if (response.config.method === 'get' && response.config.url) {
-      cache.set(response.config.url, {
-        data: response.data,
-        timestamp: Date.now()
-      });
-    }
-    return response;
-  },
+  (response) => response,
   (error) => {
     // Normalize error shape across different backend services
     const errPayload = error.response?.data;
@@ -67,5 +51,26 @@ api.interceptors.response.use(
     return Promise.reject(normalizedError);
   }
 )
+
+// Wrapper for GET requests to implement fast in-memory caching
+const originalGet = api.get;
+api.get = async (url: string, config?: any) => {
+  const cacheKey = url + (config?.params ? JSON.stringify(config.params) : '');
+  const cached = cache.get(cacheKey);
+  
+  if (cached && Date.now() - cached.timestamp < CACHE_STALE_TIME) {
+    return Promise.resolve({ 
+      data: cached.data, 
+      status: 200, 
+      statusText: 'OK', 
+      headers: {}, 
+      config: config || {} 
+    } as any);
+  }
+  
+  const response = await originalGet(url, config);
+  cache.set(cacheKey, { data: response.data, timestamp: Date.now() });
+  return response;
+};
 
 export default api

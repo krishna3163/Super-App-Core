@@ -39,7 +39,10 @@ app.use(express.json({ limit: '10kb' }));
 app.use(mongoSanitize());
 app.use(hpp());
 
+import mapRoutes from './routes/mapRoutes.js';
+
 app.use('/', snapRoutes);
+app.use('/map', mapRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Snap Service is healthy', correlationId: req.correlationId });

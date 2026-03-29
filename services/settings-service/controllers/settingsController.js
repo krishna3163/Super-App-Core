@@ -71,4 +71,4 @@ const blockUser = async (req, res) => {
   }
 };
 
-export default { getSettings, updateSection, blockUser };
+export default { getSettings, updateSection, clearSessions, blockUser };

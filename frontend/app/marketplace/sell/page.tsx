@@ -24,12 +24,28 @@ export default function SellItemPage() {
     location: ''
   })
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files
       if (!files) return
       
-      const newImages = Array.from(files).map(file => URL.createObjectURL(file))
-      setImages(prev => [...prev, ...newImages].slice(0, 10))
+      const fileList = Array.from(files);
+      const base64Promises = fileList.map(file => fileToBase64(file));
+      
+      try {
+        const newImages = await Promise.all(base64Promises);
+        setImages(prev => [...prev, ...newImages].slice(0, 10));
+      } catch (err) {
+        console.error("Error converting images to base64", err);
+      }
   }
 
   const removeImage = (index: number) => {

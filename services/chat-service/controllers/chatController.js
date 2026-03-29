@@ -1,11 +1,12 @@
 import Chat from '../models/Chat.js';
 
 const accessChat = async (req, res) => {
-  const { userId, targetUserId } = req.body;
+  const { userId, targetUserId, isAnonymous } = req.body;
   if (!targetUserId) return res.sendStatus(400);
 
   let isChat = await Chat.find({
     isGroupChat: false,
+    isAnonymous: isAnonymous || false,
     $and: [
       { users: { $elemMatch: { userId: userId } } },
       { users: { $elemMatch: { userId: targetUserId } } },
@@ -18,6 +19,7 @@ const accessChat = async (req, res) => {
     const chatData = {
       chatName: 'sender',
       isGroupChat: false,
+      isAnonymous: isAnonymous || false,
       users: [
         { userId: userId, role: 'member' },
         { userId: targetUserId, role: 'member' }
@@ -68,4 +70,22 @@ const createGroupChat = async (req, res) => {
   }
 };
 
-export default { accessChat, fetchChats, createGroupChat };
+const revealIdentityInChat = async (req, res) => {
+  try {
+    const { chatId, userId } = req.body;
+    const chat = await Chat.findById(chatId);
+    if (!chat) return res.status(404).json({ error: 'Chat not found' });
+
+    if (!chat.revealedUsers.includes(userId)) {
+      chat.revealedUsers.push(userId);
+    }
+
+    // If both users revealed, we could turn off isAnonymous or handle it in UI
+    await chat.save();
+    res.json(chat);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export default { accessChat, fetchChats, createGroupChat, revealIdentityInChat };

@@ -16,7 +16,10 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+import filterRoutes from './routes/filterRoutes.js';
+
 app.use('/', aiRoutes);
+app.use('/filters', filterRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'AI Service is running' });

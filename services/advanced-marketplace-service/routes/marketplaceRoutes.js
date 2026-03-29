@@ -7,14 +7,22 @@ const router = express.Router();
 // Listings
 router.post('/listings', listingController.createListing);
 router.get('/listings', listingController.getListings);
+router.get('/listings/seller/:sellerId', listingController.getSellerListings);
+router.get('/listings/:id', listingController.getListingDetails);
+router.put('/listings/:id', listingController.updateListing);
+router.delete('/listings/:id', listingController.deleteListing);
+router.post('/listings/:id/sold', listingController.markAsSold);
+router.post('/listings/:id/wishlist', listingController.addToWishlist);
+router.post('/listings/:id/report', listingController.reportListing);
 
 // Bidding
-router.post('/listings/bid', listingController.placeBid);
-router.get('/listings/:listingId/bids', listingController.getBids);
+router.post('/bids', listingController.placeBid);
+router.get('/bids/:listingId', listingController.getBids);
+router.post('/bids/:bidId/accept', listingController.acceptBid);
 
-// Negotiation
-router.post('/negotiate/start', negotiationController.startNegotiation);
+// Negotiations
+router.post('/negotiate', negotiationController.startNegotiation);
+router.get('/negotiate/:userId', negotiationController.getNegotiations);
 router.post('/negotiate/message', negotiationController.sendMessage);
-router.get('/negotiate/user/:userId', negotiationController.getNegotiations);
 
 export default router;

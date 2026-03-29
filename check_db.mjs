@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 async function check() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/superapp');
+    await mongoose.connect('mongodb+srv://kk3163019_db_user:FaubOuNVj0HX7Hxb@cluster0.zzn5jwt.mongodb.net/');
     const db = mongoose.connection.db;
     const users = await db.collection('users').find({}).limit(1).toArray();
     console.log('USER:', JSON.stringify(users, null, 2));

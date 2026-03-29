@@ -20,6 +20,7 @@ import engagementRoutes from './routes/engagementRoutes.js';
 import callRoutes from './routes/callRoutes.js';
 import businessRoutes from './routes/businessRoutes.js';
 import infoRoutes from './routes/infoRoutes.js';
+import serverRoutes from './routes/serverRoutes.js';
 
 dotenv.config();
 
@@ -45,9 +46,23 @@ app.use('/engagement', engagementRoutes);
 app.use('/call', callRoutes);
 app.use('/business', businessRoutes);
 app.use('/info', infoRoutes);
+app.use('/server', serverRoutes);
+
+// Fallbacks for direct gateway calls
+app.use('/api/super-comm/profile', profileRoutes);
+app.use('/api/super-comm/chat', chatRoutes);
+app.use('/api/super-comm/group', groupRoutes);
+app.use('/api/super-comm/channel', channelRoutes);
+app.use('/api/super-comm/business', businessRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Super Communication Service is running' });
+});
+
+app.all('*', (req, res, next) => {
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  err.statusCode = 404;
+  next(err);
 });
 
 // Error Handling

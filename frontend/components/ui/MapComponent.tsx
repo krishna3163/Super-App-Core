@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import Script from 'next/script'
+import { MapContainer, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
 
 interface MapProps {
   center?: { lat: number; lng: number }
@@ -12,35 +13,23 @@ interface MapProps {
 export default function MapComponent({ 
   center = { lat: 28.6139, lng: 77.2090 }, // Default to New Delhi
   zoom = 12,
-  className = "h-full w-full rounded-2xl"
+  className = "h-full w-full rounded-2xl overflow-hidden"
 }: MapProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-
-  const initMap = () => {
-    if (mapRef.current && (window as any).google) {
-      new (window as any).google.maps.Map(mapRef.current, {
-        center,
-        zoom,
-        disableDefaultUI: true,
-        styles: [
-            {
-                "featureType": "all",
-                "elementType": "labels.text.fill",
-                "stylers": [{ "color": "#ffffff" }]
-            },
-            // ... typical dark mode or custom styles can go here
-        ]
-      })
-    }
-  }
+  const position: [number, number] = [center.lat, center.lng];
 
   return (
-    <>
-      <div ref={mapRef} className={className} />
-      <Script 
-        src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.1/mapsJavaScriptAPI.js"
-        onLoad={initMap}
-      />
-    </>
+    <div className={className}>
+        <MapContainer 
+            center={position} 
+            zoom={zoom} 
+            style={{ height: '100%', width: '100%' }} 
+            zoomControl={false}
+        >
+            <TileLayer
+                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            />
+        </MapContainer>
+    </div>
   )
 }

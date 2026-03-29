@@ -16,7 +16,14 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+import crmRoutes from './routes/crmRoutes.js';
+import loyaltyRoutes from './routes/loyaltyRoutes.js';
+import enterpriseRoutes from './routes/enterpriseRoutes.js';
+
 app.use('/', dashboardRoutes);
+app.use('/crm', crmRoutes);
+app.use('/loyalty', loyaltyRoutes);
+app.use('/enterprise', enterpriseRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Business Dashboard Service is running' });

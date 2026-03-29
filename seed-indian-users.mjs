@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const MONGO_URI = 'mongodb://127.0.0.1:27017/superapp';
+const MONGO_URI = 'mongodb+srv://kk3163019_db_user:FaubOuNVj0HX7Hxb@cluster0.zzn5jwt.mongodb.net/';
 
 const indianNames = [
     'Aarav Sharma', 'Priyanka Chopra', 'Arjun Kapoor', 'Ishaan Malhotra', 'Diya Patel',

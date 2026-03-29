@@ -107,6 +107,11 @@ const settingsSchema = new mongoose.Schema({
       deviceType: String,
       lastLogin: { type: Date, default: Date.now }
     }]
+  },
+
+  // Home Screen Layout Defaults
+  homeScreen: {
+    widgets: { type: [String], default: ['feed', 'reddit_feed', 'friend_suggestions', 'trending_tags', 'todo', 'marketplace_deals'] }
   }
 
 }, { timestamps: true });

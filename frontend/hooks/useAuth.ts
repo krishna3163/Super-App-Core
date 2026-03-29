@@ -22,11 +22,12 @@ export const useAuth = (requireAuth = true) => {
         try {
             const profileRes = await api.get(`/users/profile/${user.id}`).catch(() => null)
             const profile = profileRes?.data?.data;
-            if (profile?.name) {
+            const resolvedName = profile?.name || profile?.username || user?.email?.split('@')[0];
+            if (resolvedName) {
                 setAuth({ 
                     id: user.id, 
                     email: profile.email || user?.email,
-                    name: profile.name,
+                name: resolvedName,
                     avatar: profile.avatar
                 }, token)
             }

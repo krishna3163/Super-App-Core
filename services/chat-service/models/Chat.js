@@ -12,6 +12,8 @@ const chatSchema = new mongoose.Schema({
   groupAdmin: { type: String },
   description: { type: String, default: '' },
   groupIcon: { type: String, default: '' },
+  isAnonymous: { type: Boolean, default: false },
+  revealedUsers: [String],
   settings: {
     whoCanSendMessages: { type: String, enum: ['everyone', 'adminsOnly'], default: 'everyone' },
     whoCanEditInfo: { type: String, enum: ['everyone', 'adminsOnly'], default: 'everyone' },

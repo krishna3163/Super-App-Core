@@ -16,7 +16,14 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+import adCampaignRoutes from './routes/adCampaignRoutes.js';
+import posRoutes from './routes/posRoutes.js';
+import invoiceRoutes from './routes/invoiceRoutes.js';
+
 app.use('/', monetizationRoutes);
+app.use('/ads', adCampaignRoutes);
+app.use('/pos', posRoutes);
+app.use('/invoices', invoiceRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Monetization Service is running' });

@@ -36,8 +36,14 @@ const acceptOrder = async (req, res) => {
 
 const completeDelivery = async (req, res) => {
   try {
-    const { orderId } = req.params;
+    const orderId = req.params.orderId || req.body.orderId;
+    if (!orderId) {
+      return res.status(400).json({ error: 'orderId is required' });
+    }
     const order = await AdvancedOrder.findByIdAndUpdate(orderId, { status: 'delivered' }, { new: true });
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
     
     // Add earnings to partner (flat 30 units per delivery)
     await DeliveryPartner.findOneAndUpdate(
@@ -51,4 +57,35 @@ const completeDelivery = async (req, res) => {
   }
 };
 
-export default { updatePartnerStatus, acceptOrder, completeDelivery };
+const getEarnings = async (req, res) => {
+  try {
+    const partnerId = req.params.partnerId;
+    const partner = await DeliveryPartner.findOne({ userId: partnerId });
+    if (!partner) {
+      return res.status(404).json({ error: 'Delivery partner not found' });
+    }
+    res.json({
+      status: 'success',
+      data: {
+        userId: partner.userId,
+        earnings: partner.earnings || 0,
+        status: partner.status || 'available'
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Backward-compatible aliases used by routes
+const registerPartner = updatePartnerStatus;
+const acceptDelivery = acceptOrder;
+
+export default {
+  updatePartnerStatus,
+  acceptOrder,
+  completeDelivery,
+  getEarnings,
+  registerPartner,
+  acceptDelivery
+};

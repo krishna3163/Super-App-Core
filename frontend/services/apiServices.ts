@@ -92,27 +92,47 @@ export const placeOrder = async (orderData: any) => {
 // DATING
 // ==========================================
 export const getDatingProfile = async (userId: string) => {
-  const { data } = await api.get(`/dating/api/dating/profile/${userId}`);
+  const { data } = await api.get(`/dating/profile/${userId}`);
   return data;
 };
 
 export const updateDatingProfile = async (profileData: any) => {
-  const { data } = await api.post('/dating/api/dating/profile', profileData);
+  const { data } = await api.post('/dating/profile', profileData);
   return data;
 };
 
-export const swipeDating = async (userId: string, targetUserId: string, action: 'like' | 'dislike') => {
-  const { data } = await api.post('/dating/api/dating/swipe', { userId, targetUserId, action });
+export const swipeDating = async (userId: string, targetUserId: string, action: 'like' | 'dislike', type?: 'like' | 'pass' | 'super_like') => {
+  const { data } = await api.post('/dating/swipe', { userId, targetUserId, action, type });
+  return data;
+};
+
+export const rewindDating = async (userId: string) => {
+  const { data } = await api.post('/dating/rewind', { userId });
+  return data;
+};
+
+export const boostDating = async (userId: string) => {
+  const { data } = await api.post('/dating/boost', { userId });
   return data;
 };
 
 export const getDatingMatches = async (userId: string) => {
-  const { data } = await api.get(`/dating/api/dating/matches/${userId}`);
+  const { data } = await api.get(`/dating/matches/${userId}`);
   return data;
 };
 
-export const getRandomDatingProfiles = async () => {
-  const { data } = await api.get('/dating/api/dating/random');
+export const getRandomDatingProfiles = async (userId?: string) => {
+  const { data } = await api.get(`/dating/random${userId ? `?userId=${userId}` : ''}`);
+  return data;
+};
+
+export const joinBlindDate = async (userId: string) => {
+  const { data } = await api.post('/dating/blind-date/join', { userId });
+  return data;
+};
+
+export const revealBlindIdentity = async (userId: string, matchId: string) => {
+  const { data } = await api.post('/dating/blind-date/reveal', { userId, matchId });
   return data;
 };
 

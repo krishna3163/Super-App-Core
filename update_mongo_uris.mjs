@@ -16,7 +16,7 @@ function getEnvFiles(dir, allFiles = []) {
   return allFiles;
 }
 
-const rootDir = 'C:/Users/krish/Desktop/Super-App-Core';
+const rootDir = process.cwd();
 const envFiles = getEnvFiles(rootDir);
 
 for (const filePath of envFiles) {
@@ -24,8 +24,9 @@ for (const filePath of envFiles) {
   if (content.includes('MONGO_URI=')) {
     const parentDir = path.basename(path.dirname(filePath));
     const serviceName = parentDir.endsWith('-service') ? parentDir.slice(0, -8) : parentDir;
-    const newUri = `mongodb://127.0.0.1:27017/superapp?retryWrites=true&w=majority`;
-    
+    const dbName = `superapp_${serviceName.replace(/-/g, '_')}`;
+    const newUri = `mongodb+srv://kk3163019_db_user:FaubOuNVj0HX7Hxb@cluster0.zzn5jwt.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+
     // Replace the line starting with MONGO_URI=
     const updatedContent = content.split('\n').map(line => {
       if (line.trim().startsWith('MONGO_URI=')) {
@@ -36,7 +37,7 @@ for (const filePath of envFiles) {
     
     if (content !== updatedContent) {
       fs.writeFileSync(filePath, updatedContent);
-      console.log(`Updated ${filePath} with database super-app-${serviceName}`);
+      console.log(`Updated ${filePath} with database ${dbName}`);
     } else {
       console.log(`No change for ${filePath}`);
     }

@@ -40,7 +40,10 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(hpp());
 
+import expenseRoutes from './routes/expenseRoutes.js';
+
 app.use('/groups', groupChatRoutes);
+app.use('/expenses', expenseRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Group Chat Service is healthy', correlationId: req.correlationId });

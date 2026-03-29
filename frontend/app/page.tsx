@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import useAuthStore from '@/store/useAuthStore'
 import api from '@/services/api'
 import Link from 'next/link'
@@ -12,15 +12,46 @@ import {
   Heart, CalendarDays, ListTodo, Radio, Phone, FileText, ArrowUpRight, TrendingUp
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import MapComponent from '@/components/ui/MapComponent'
 import clsx from 'clsx'
+
+const quickApps = [
+  { label: 'Chat',     icon: MessageCircle, color: 'from-blue-500 to-indigo-600',    shadow: 'shadow-blue-500/30',    href: '/chat' },
+  { label: 'Dating',   icon: Heart,         color: 'from-pink-500 to-rose-600',      shadow: 'shadow-pink-500/30',    href: '/dating' },
+  { label: 'Ride',     icon: Car,           color: 'from-amber-500 to-orange-600',   shadow: 'shadow-amber-500/30',   href: '/rides' },
+  { label: 'Food',     icon: Utensils,      color: 'from-red-500 to-rose-600',       shadow: 'shadow-red-500/30',     href: '/food' },
+  { label: 'Shop',     icon: ShoppingBag,   color: 'from-violet-500 to-purple-600',  shadow: 'shadow-violet-500/30',  href: '/marketplace' },
+  { label: 'Calendar', icon: CalendarDays,  color: 'from-teal-500 to-emerald-600',   shadow: 'shadow-teal-500/30',    href: '/calendar' },
+  { label: 'Tasks',    icon: ListTodo,      color: 'from-fuchsia-500 to-pink-600',   shadow: 'shadow-fuchsia-500/30', href: '/tasks' },
+  { label: 'Jobs',     icon: Briefcase,     color: 'from-emerald-500 to-green-600',  shadow: 'shadow-emerald-500/30', href: '/professional' },
+  { label: 'Live',     icon: Radio,         color: 'from-red-600 to-orange-600',     shadow: 'shadow-red-500/30',     href: '/live' },
+  { label: 'Calls',    icon: Phone,         color: 'from-green-500 to-emerald-600',  shadow: 'shadow-green-500/30',   href: '/calls' },
+  { label: 'Coding',   icon: Code2,         color: 'from-cyan-500 to-blue-600',      shadow: 'shadow-cyan-500/30',    href: '/coding' },
+  { label: 'More',     icon: Grid,          color: 'from-gray-500 to-slate-600',     shadow: 'shadow-gray-500/30',    href: '/apps' },
+]
 
 export default function HomePage() {
   const { user, isReady } = useAuth()
   const { activities, appMode } = useAuthStore()
-  const [randomUsers, setRandomUsers] = useState<any[]>([])
   const [greeting, setGreeting] = useState('Hello')
+  const queryClient = useQueryClient()
+
+  const rawDisplayName =
+    user?.name?.trim() ||
+    user?.email?.split('@')[0]?.replace(/[._-]+/g, ' ') ||
+    user?.id?.replace(/^user-?/i, '') ||
+    'User'
+
+  const displayName = rawDisplayName
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+  const firstName = displayName.split(' ')[0] || 'User'
+  const userInitial = firstName.charAt(0).toUpperCase() || 'U'
+  const profileHref = user?.id ? `/u/${encodeURIComponent(user.id)}` : '/'
 
   // Dynamic greeting
   useEffect(() => {
@@ -30,29 +61,34 @@ export default function HomePage() {
     else setGreeting('Good Evening')
   }, [])
 
-  const { data: allUsers, isLoading } = useQuery({
-    queryKey: ['recent-users'],
+  const { data: suggestions = [] } = useQuery({
+    queryKey: ['people-you-may-know', user?.id],
     queryFn: async () => {
-      const { data } = await api.get('/users/profile/list').catch(() => ({ data: [] }))
-      return data
+      if (!user?.id) return []
+      const { data } = await api.get(`/super-comm/profile/${user.id}/suggestions?limit=6`).catch(() => ({ data: [] }))
+      return Array.isArray(data) ? data : []
     },
-    enabled: isReady
+    enabled: isReady && !!user?.id
   })
 
-  useEffect(() => {
-    if (allUsers && allUsers.length > 0) {
-      const shuffled = [...allUsers].sort(() => 0.5 - Math.random())
-      setRandomUsers(shuffled.slice(0, 5))
-    } else {
-      setRandomUsers([])
+  const followSuggestionMutation = useMutation({
+    mutationFn: async (followingId: string) => {
+      if (!user?.id || !followingId) return
+      await api.post('/super-comm/profile/follow', {
+        followerId: user.id,
+        followingId
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['people-you-may-know', user?.id] })
     }
-  }, [allUsers])
+  })
 
   const { data: unreadCount = 0 } = useQuery({
     queryKey: ['notifications-unread', user?.id],
     queryFn: async () => {
-      const { data } = await api.get(`/notifications/${user?.id}`)
-      return data?.filter((n: any) => !n.isRead)?.length || 0
+      const { data } = await api.get(`/notifications/notify/${user?.id}`)
+      return data?.data?.filter((n: any) => !n.isRead)?.length || 0
     },
     enabled: isReady && !!user?.id,
     refetchInterval: 15000
@@ -69,22 +105,6 @@ export default function HomePage() {
     </div>
   )
 
-  // ─── Syntax-colored quick actions ─────────────────────────────────────────
-  const quickApps = useMemo(() => [
-    { label: 'Chat',     icon: MessageCircle, color: 'from-blue-500 to-indigo-600',    shadow: 'shadow-blue-500/30',    href: '/chat' },
-    { label: 'Dating',   icon: Heart,         color: 'from-pink-500 to-rose-600',      shadow: 'shadow-pink-500/30',    href: '/dating' },
-    { label: 'Ride',     icon: Car,           color: 'from-amber-500 to-orange-600',   shadow: 'shadow-amber-500/30',   href: '/rides' },
-    { label: 'Food',     icon: Utensils,      color: 'from-red-500 to-rose-600',       shadow: 'shadow-red-500/30',     href: '/food' },
-    { label: 'Shop',     icon: ShoppingBag,   color: 'from-violet-500 to-purple-600',  shadow: 'shadow-violet-500/30',  href: '/marketplace' },
-    { label: 'Calendar', icon: CalendarDays,  color: 'from-teal-500 to-emerald-600',   shadow: 'shadow-teal-500/30',    href: '/calendar' },
-    { label: 'Tasks',    icon: ListTodo,      color: 'from-fuchsia-500 to-pink-600',   shadow: 'shadow-fuchsia-500/30', href: '/tasks' },
-    { label: 'Jobs',     icon: Briefcase,     color: 'from-emerald-500 to-green-600',  shadow: 'shadow-emerald-500/30', href: '/professional' },
-    { label: 'Live',     icon: Radio,         color: 'from-red-600 to-orange-600',     shadow: 'shadow-red-500/30',     href: '/live' },
-    { label: 'Calls',    icon: Phone,         color: 'from-green-500 to-emerald-600',  shadow: 'shadow-green-500/30',   href: '/calls' },
-    { label: 'Coding',   icon: Code2,         color: 'from-cyan-500 to-blue-600',      shadow: 'shadow-cyan-500/30',    href: '/coding' },
-    { label: 'More',     icon: Grid,          color: 'from-gray-500 to-slate-600',     shadow: 'shadow-gray-500/30',    href: '/apps' },
-  ], [])
-
   // ─── MOBILE VIEW ──────────────────────────────────────────────────────────
   const MobileView = () => (
     <div className="md:hidden flex flex-col bg-[var(--bg-primary)] min-h-screen pb-32">
@@ -93,7 +113,7 @@ export default function HomePage() {
         <div className="flex justify-between items-center">
           <div>
             <p className="text-[10px] font-black text-[var(--syn-type)] uppercase tracking-[0.2em] mb-1">{greeting}</p>
-            <h1 className="text-2xl font-black tracking-tight">{user?.name?.split(' ')[0] || 'User'} 👋</h1>
+            <h1 className="text-2xl font-black tracking-tight">{firstName} 👋</h1>
           </div>
           <div className="flex items-center gap-2.5">
             <Link href="/notifications" className="relative p-2.5 bg-[var(--bg-card)] rounded-2xl shadow-sm border border-gray-200/30 dark:border-gray-800/30 interactive">
@@ -104,9 +124,9 @@ export default function HomePage() {
                 </span>
               )}
             </Link>
-            <Link href="/settings">
+            <Link href={profileHref}>
               <div className="w-11 h-11 rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--syn-keyword)] to-[var(--syn-function)] flex items-center justify-center text-white font-black text-lg shadow-lg shadow-purple-500/20 interactive">
-                {user?.name?.[0]?.toUpperCase() || 'U'}
+                {userInitial}
               </div>
             </Link>
           </div>
@@ -220,7 +240,7 @@ export default function HomePage() {
       <section className="flex justify-between items-center animate-slide-up">
         <div>
           <p className="text-xs font-black text-[var(--syn-type)] uppercase tracking-[0.2em] mb-1">{greeting}</p>
-          <h1 className="text-3xl font-black tracking-tight">Hey, {user?.name?.split(' ')[0] || 'User'}! 👋</h1>
+          <h1 className="text-3xl font-black tracking-tight">Hey, {firstName}! 👋</h1>
           <p className="text-[var(--syn-comment)] font-medium mt-1">Your world, unified.</p>
         </div>
         <div className="flex flex-row items-center gap-4">
@@ -232,9 +252,9 @@ export default function HomePage() {
               </span>
             )}
           </Link>
-          <Link href="/settings">
+          <Link href={profileHref}>
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--syn-keyword)] to-[var(--syn-function)] flex items-center justify-center text-white font-black shadow-xl shadow-purple-500/20 text-2xl interactive">
-              {user?.name?.[0]?.toUpperCase() || 'U'}
+              {userInitial}
             </div>
           </Link>
         </div>
@@ -298,18 +318,34 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {randomUsers.map((u) => (
-              <div key={u.id} className="bg-[var(--bg-card)] p-4 rounded-2xl flex items-center gap-4 shadow-sm border border-gray-200/30 dark:border-gray-800/30 card-hover">
-                <img src={u.avatar} className="w-12 h-12 rounded-2xl object-cover shadow-sm" alt="" />
+            {suggestions.map((u: any) => (
+              <div key={u.userId} className="bg-[var(--bg-card)] p-4 rounded-2xl flex items-center gap-4 shadow-sm border border-gray-200/30 dark:border-gray-800/30 card-hover">
+                <img src={u.avatar || 'https://i.pravatar.cc/120?u=anonymous'} className="w-12 h-12 rounded-2xl object-cover shadow-sm" alt="" />
                 <div className="flex-1">
-                  <p className="font-bold text-sm">{u.name}</p>
-                  <p className="text-[10px] text-[var(--syn-comment)]">Recently joined</p>
+                  <p className="font-bold text-sm">{u.username || u.userId}</p>
+                  <p className="text-[10px] text-[var(--syn-comment)]">
+                    {(u.mutualCount || 0) > 0 ? `${u.mutualCount} mutual` : `${u.followersCount || 0} followers`}
+                  </p>
                 </div>
-                <Link href={`/chat/${u.id}`} className="bg-[var(--syn-function)]/10 text-[var(--syn-function)] p-2.5 rounded-xl hover:bg-[var(--syn-function)] hover:text-white transition-all interactive">
-                  <MessageCircle size={18} />
-                </Link>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => followSuggestionMutation.mutate(u.userId)}
+                    className="bg-[var(--syn-function)]/10 text-[var(--syn-function)] p-2.5 rounded-xl hover:bg-[var(--syn-function)] hover:text-white transition-all interactive"
+                    title="Follow"
+                  >
+                    <UserPlus size={18} />
+                  </button>
+                  <Link href={`/chat/${u.userId}`} className="bg-[var(--bg-elevated)] text-[var(--syn-comment)] p-2.5 rounded-xl hover:bg-[var(--syn-function)]/20 transition-all interactive">
+                    <MessageCircle size={18} />
+                  </Link>
+                </div>
               </div>
             ))}
+            {suggestions.length === 0 && (
+              <div className="col-span-full p-6 text-center text-sm text-[var(--syn-comment)] bg-[var(--bg-card)] rounded-2xl border border-gray-200/30 dark:border-gray-800/30">
+                No suggestions yet. Follow a few people to get better recommendations.
+              </div>
+            )}
           </div>
         </section>
 

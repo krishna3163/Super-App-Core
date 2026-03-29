@@ -16,7 +16,10 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+import shippingRoutes from './routes/shippingRoutes.js';
+
 app.use('/', orderRoutes);
+app.use('/shipping', shippingRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Order Service is running' });

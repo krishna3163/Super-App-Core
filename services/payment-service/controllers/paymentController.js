@@ -1,6 +1,6 @@
 import PaymentProfile from '../models/PaymentProfile.js';
 import Transaction from '../models/Transaction.js';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 export const createProfile = async (req, res) => {
   try {
@@ -10,7 +10,7 @@ export const createProfile = async (req, res) => {
     let profile = await PaymentProfile.findOne({ userId });
     if (profile) return res.status(200).json(profile);
 
-    const walletId = `wallet_${uuidv4().split('-')[0]}`;
+    const walletId = `wallet_${crypto.randomUUID().split('-')[0]}`;
     profile = new PaymentProfile({ 
       userId, 
       upiId: upiId || `${userId}@superapp`,
@@ -32,7 +32,7 @@ export const getProfile = async (req, res) => {
     
     if (!profile) {
       // Create profile on the fly if it doesn't exist
-      const walletId = `wallet_${uuidv4().split('-')[0]}`;
+      const walletId = `wallet_${crypto.randomUUID().split('-')[0]}`;
       profile = await PaymentProfile.create({
         userId,
         upiId: `${userId}@superapp`,

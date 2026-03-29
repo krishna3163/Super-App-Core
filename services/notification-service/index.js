@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import admin from 'firebase-admin';
 import connectDB from './config/db.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 
@@ -34,23 +35,27 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.post('/send', async (req, res) => {
-  try {
-    const { token, title, body, data } = req.body;
-    const message = {
-      notification: { title, body },
-      token: token,
-      data: data || {}
-    };
-    const response = await admin.messaging().send(message);
-    res.json({ success: true, messageId: response });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+app.use('/notify', notificationRoutes);
+app.use('/', notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Notification Service is running' });
+});
+
+app.all('*', (req, res, next) => {
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  err.statusCode = 404;
+  next(err);
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    status: 'error',
+    message: err.message
+  });
 });
 
 connectDB().then(() => {

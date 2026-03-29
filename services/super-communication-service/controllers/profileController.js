@@ -34,7 +34,13 @@ export const updateProfile = async (req, res) => {
 export const getProfileByUsername = async (req, res) => {
   try {
     const { username } = req.params;
-    const profile = await AdvancedProfile.findOne({ username });
+    const profile = await AdvancedProfile.findOne({
+      $or: [
+        { username },
+        { userId: username },
+        { uniqueId: username }
+      ]
+    });
     if (!profile) return res.status(404).json({ error: 'Profile not found' });
 
     // Increment profile views
@@ -105,8 +111,25 @@ export const generateProfileQR = async (req, res) => {
 export const getFollowers = async (req, res) => {
   try {
     const { userId } = req.params;
-    const followers = await Follower.find({ followingId: userId });
-    res.json(followers);
+    const followers = await Follower.find({ followingId: userId }).lean();
+    const followerIds = followers.map((item) => item.followerId);
+    const profiles = await AdvancedProfile.find({ userId: { $in: followerIds } }).lean();
+    const profilesMap = new Map(profiles.map((p) => [p.userId, p]));
+
+    const enriched = followers.map((item) => {
+      const p = profilesMap.get(item.followerId);
+      return {
+        followerId: item.followerId,
+        followingId: item.followingId,
+        followedAt: item.createdAt,
+        userId: item.followerId,
+        username: p?.username || item.followerId,
+        avatar: p?.avatar || '',
+        uniqueId: p?.uniqueId || ''
+      };
+    });
+
+    res.json(enriched);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -115,8 +138,68 @@ export const getFollowers = async (req, res) => {
 export const getFollowing = async (req, res) => {
   try {
     const { userId } = req.params;
-    const following = await Follower.find({ followerId: userId });
-    res.json(following);
+    const following = await Follower.find({ followerId: userId }).lean();
+    const followingIds = following.map((item) => item.followingId);
+    const profiles = await AdvancedProfile.find({ userId: { $in: followingIds } }).lean();
+    const profilesMap = new Map(profiles.map((p) => [p.userId, p]));
+
+    const enriched = following.map((item) => {
+      const p = profilesMap.get(item.followingId);
+      return {
+        followerId: item.followerId,
+        followingId: item.followingId,
+        followedAt: item.createdAt,
+        userId: item.followingId,
+        username: p?.username || item.followingId,
+        avatar: p?.avatar || '',
+        uniqueId: p?.uniqueId || ''
+      };
+    });
+
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getPeopleYouMayKnow = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const limit = Math.max(1, Math.min(Number(req.query.limit) || 6, 20));
+
+    const followingDocs = await Follower.find({ followerId: userId }).lean();
+    const followingIds = followingDocs.map((f) => f.followingId);
+    const excluded = [...new Set([userId, ...followingIds])];
+
+    const suggestions = await AdvancedProfile.find({ userId: { $nin: excluded } })
+      .sort({ followersCount: -1, profileViews: -1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    const candidateIds = suggestions.map((s) => s.userId);
+    let mutualMap = new Map();
+
+    if (candidateIds.length > 0 && followingIds.length > 0) {
+      const mutuals = await Follower.aggregate([
+        { $match: { followerId: { $in: followingIds }, followingId: { $in: candidateIds } } },
+        { $group: { _id: '$followingId', count: { $sum: 1 } } }
+      ]);
+      mutualMap = new Map(mutuals.map((m) => [m._id, m.count]));
+    }
+
+    const payload = suggestions.map((item) => ({
+      userId: item.userId,
+      username: item.username,
+      avatar: item.avatar || '',
+      uniqueId: item.uniqueId,
+      bio: item.bio || '',
+      followersCount: item.followersCount || 0,
+      followingCount: item.followingCount || 0,
+      mutualCount: mutualMap.get(item.userId) || 0,
+      isFollowing: false
+    }));
+
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

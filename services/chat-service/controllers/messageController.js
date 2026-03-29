@@ -2,15 +2,15 @@ import Message from '../models/Message.js';
 import Chat from '../models/Chat.js';
 
 const sendMessage = async (req, res) => {
-  const { content, chatId, senderId, messageType, replyTo } = req.body;
+  const { content, chatId, senderId, messageType, type, replyTo, replyToId } = req.body;
   if (!content || !chatId) return res.sendStatus(400);
 
   const newMessage = {
     sender: senderId,
     content: content,
     chat: chatId,
-    messageType: messageType || 'text',
-    replyTo: replyTo || null,
+    messageType: messageType || type || 'text',
+    replyTo: replyTo || replyToId || null,
   };
 
   try {

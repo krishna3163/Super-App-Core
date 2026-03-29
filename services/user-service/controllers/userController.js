@@ -4,8 +4,25 @@ import UserSettings from '../models/UserSettings.js';
 const getProfile = async (req, res, next) => {
   try {
     const userId = req.params.id;
-    const user = await User.findOne({ userId });
-    if (!user) return res.status(404).json({ status: 'fail', message: 'User not found' });
+    let user = await User.findOne({ userId }).lean();
+    
+    // If user record doesn't exist in user-service yet, return a skeleton profile 
+    // instead of 404 to avoid frontend errors on first login
+    if (!user) {
+      return res.json({ 
+        status: 'success', 
+        data: { 
+          userId,
+          name: '',
+          bio: '',
+          avatar: '',
+          profileCompleteness: 0,
+          isVerified: false
+        }, 
+        correlationId: req.correlationId 
+      });
+    }
+    
     res.json({ status: 'success', data: user, correlationId: req.correlationId });
   } catch (err) {
     next(err);
@@ -176,7 +193,7 @@ const blockUser = async (req, res, next) => {
 
 const listProfiles = async (req, res, next) => {
   try {
-    const users = await User.find({}).limit(50);
+    const users = await User.find({}).limit(50).lean();
     res.json({ status: 'success', data: users, correlationId: req.correlationId });
   } catch (err) {
     next(err);

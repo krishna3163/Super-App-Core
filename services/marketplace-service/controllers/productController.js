@@ -4,7 +4,24 @@ import Review from '../models/Review.js';
 const createProduct = async (req, res) => {
   try {
     const { sellerId, title, description, price, category, images, location } = req.body;
-    const product = new Product({ sellerId, title, description, price, category, images, location });
+    
+    // Ensure location has coordinates for 2dsphere index
+    const processedLocation = location ? {
+      type: 'Point',
+      coordinates: location.coordinates || [0, 0],
+      address: location.address || ''
+    } : undefined;
+
+    const product = new Product({ 
+      sellerId, 
+      title, 
+      description, 
+      price, 
+      category, 
+      images, 
+      location: processedLocation 
+    });
+    
     await product.save();
     res.status(201).json(product);
   } catch (err) {
@@ -25,7 +42,7 @@ const getProducts = async (req, res) => {
     }
     if (search) query.$text = { $search: search };
 
-    const products = await Product.find(query).sort({ createdAt: -1 });
+    const products = await Product.find(query).sort({ createdAt: -1 }).lean();
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -34,7 +51,7 @@ const getProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).lean();
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
   } catch (err) {

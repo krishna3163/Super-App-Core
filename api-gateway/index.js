@@ -7,11 +7,29 @@ import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import apicache from 'apicache';
+import compression from 'compression';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5050;
+
+// Middleware
+app.use(compression());
+
+// Initialize cache
+const cache = apicache.options({
+  appendKey: (req, res) => req.user ? req.user.id : 'guest',
+  statusCodes: { include: [200, 201] }
+}).middleware;
+
+const cacheMiddleware = (duration) => (req, res, next) => {
+  if (req.method === 'GET') {
+    return cache(duration)(req, res, next);
+  }
+  next();
+};
 
 // ==========================================
 // MIDDLEWARE
@@ -105,14 +123,14 @@ const authenticateToken = (req, res, next) => {
 // PROTECTED ROUTES
 // ==========================================
 
-app.use('/api/users', authenticateToken, createProxyMiddleware({
-  target: process.env.USER_SERVICE_URL,
+app.use('/api/users', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
+  target: process.env.USER_SERVICE_URL || 'http://localhost:5002',
   pathRewrite: { '^/api/users': '' },
   ...proxyOptions
 }));
 
 app.use('/api/chats', authenticateToken, createProxyMiddleware({
-  target: process.env.CHAT_SERVICE_URL,
+  target: process.env.CHAT_SERVICE_URL || 'http://localhost:5003',
   pathRewrite: { '^/api/chats': '/chats' },
   ws: true,
   ...proxyOptions
@@ -124,26 +142,26 @@ app.use('/api/snaps', authenticateToken, createProxyMiddleware({
   ...proxyOptions
 }));
 
-app.use('/api/social', authenticateToken, createProxyMiddleware({
-  target: process.env.SOCIAL_SERVICE_URL,
+app.use('/api/social', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
+  target: process.env.SOCIAL_SERVICE_URL || 'http://localhost:5004',
   pathRewrite: { '^/api/social': '' },
   ...proxyOptions
 }));
 
-app.use('/api/dashboard', authenticateToken, createProxyMiddleware({
-  target: process.env.DASHBOARD_SERVICE_URL,
+app.use('/api/dashboard', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
+  target: process.env.DASHBOARD_SERVICE_URL || 'http://localhost:5014',
   pathRewrite: { '^/api/dashboard': '' },
   ...proxyOptions
 }));
 
 app.use('/api/settings', authenticateToken, createProxyMiddleware({
-  target: process.env.SETTINGS_SERVICE_URL,
+  target: process.env.SETTINGS_SERVICE_URL || 'http://localhost:5027',
   pathRewrite: { '^/api/settings': '' },
   ...proxyOptions
 }));
 
 app.use('/api/notifications', authenticateToken, createProxyMiddleware({
-    target: process.env.NOTIFICATION_SERVICE_URL,
+    target: process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:5013',
     pathRewrite: { '^/api/notifications': '' },
     ...proxyOptions
 }));
@@ -154,7 +172,7 @@ app.use('/api/wallet', authenticateToken, createProxyMiddleware({
   ...proxyOptions
 }));
 
-app.use('/api/marketplace', authenticateToken, createProxyMiddleware({
+app.use('/api/marketplace', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
   target: process.env.MARKETPLACE_SERVICE_URL || 'http://localhost:5008',
   pathRewrite: { '^/api/marketplace': '' },
   ...proxyOptions
@@ -178,15 +196,21 @@ app.use('/api/rides', authenticateToken, createProxyMiddleware({
   ...proxyOptions
 }));
 
-app.use('/api/food', authenticateToken, createProxyMiddleware({
+app.use('/api/food', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
   target: process.env.FOOD_SERVICE_URL || 'http://localhost:5010',
   pathRewrite: { '^/api/food': '' },
   ...proxyOptions
 }));
 
-app.use('/api/dating', authenticateToken, createProxyMiddleware({
+app.use('/api/hotels', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
+  target: process.env.HOTEL_SERVICE_URL || 'http://localhost:5021',
+  pathRewrite: { '^/api/hotels': '' },
+  ...proxyOptions
+}));
+
+app.use('/api/dating', authenticateToken, cacheMiddleware('30 seconds'), createProxyMiddleware({
   target: process.env.DATING_SERVICE_URL || 'http://localhost:5007',
-  pathRewrite: { '^/api/dating': '' },
+  pathRewrite: { '^/api/dating': '/api/dating' },
   ...proxyOptions
 }));
 
@@ -227,7 +251,34 @@ app.use('/api/advanced-interactions', authenticateToken, createProxyMiddleware({
   ...proxyOptions
 }));
 
+app.use('/api/mini-apps', authenticateToken, createProxyMiddleware({
+  target: process.env.MINI_APP_SERVICE_URL || 'http://localhost:5016',
+  pathRewrite: { '^/api/mini-apps': '' },
+  ...proxyOptions
+}));
+
+app.use('/api/games', authenticateToken, createProxyMiddleware({
+  target: process.env.GAME_SERVICE_URL || 'http://localhost:5012',
+  pathRewrite: { '^/api/games': '' },
+  ws: true,
+  ...proxyOptions
+}));
+
+app.use('/api/business-dashboard', authenticateToken, createProxyMiddleware({
+  target: process.env.BUSINESS_DASHBOARD_SERVICE_URL || 'http://localhost:5034',
+  pathRewrite: { '^/api/business-dashboard': '' },
+  ...proxyOptions
+}));
+
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'API Gateway is online', 
+    documentation: '/health',
+    frontend: 'http://localhost:3000'
+  });
+});
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'API Gateway is running' });

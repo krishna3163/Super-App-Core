@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import AILog from '../models/AILog.js';
 import dotenv from 'dotenv';
+import MasterAlgorithm from '../utils/MasterAlgorithm.js';
 
 dotenv.config();
 
@@ -115,6 +116,23 @@ export const getRecommendations = async (req, res) => {
     await logUsage(userId, 'recommend', prompt, JSON.stringify(recommendedIds));
 
     res.json({ recommendedIds });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const rankFeed = async (req, res) => {
+  try {
+    const { user, items } = req.body;
+    
+    if (!user || !items || !Array.isArray(items)) {
+      return res.status(400).json({ error: 'User and Items array are required' });
+    }
+
+    // Pass the raw data through the Ultimate Unified Super Core Algorithm
+    const rankedFeed = MasterAlgorithm.rankFeed(user, items);
+
+    res.json({ status: 'success', data: rankedFeed });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

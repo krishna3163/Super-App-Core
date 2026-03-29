@@ -10,7 +10,7 @@ import {
   Send, ArrowLeft, Plus, Image as ImageIcon, BarChart2,
   Calendar, Clock, Bell, AlertTriangle, MoreVertical,
   Reply, Trash2, Phone, Video, Check, CheckCheck,
-  X, User, Loader2, Info, Zap
+  X, User, Loader2, Info, Zap, ShieldQuestion, Eye, MessageSquare
 } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -21,8 +21,19 @@ interface Msg {
   createdAt: string; status?: string
 }
 
+const getSenderId = (sender: any) => {
+  if (!sender) return ''
+  if (typeof sender === 'string') return sender
+  return sender._id || sender.userId || sender.id || ''
+}
+
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-const Av = ({ name, avatar }: { name?: string; avatar?: string }) => {
+const Av = ({ name, avatar, isAnonymous }: { name?: string; avatar?: string; isAnonymous?: boolean }) => {
+  if (isAnonymous) return (
+    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white shrink-0">
+      <ShieldQuestion size={14} />
+    </div>
+  )
   if (avatar) return <img src={avatar} className="w-8 h-8 rounded-full object-cover shrink-0" alt="" />
   return (
     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shrink-0 uppercase">
@@ -32,12 +43,13 @@ const Av = ({ name, avatar }: { name?: string; avatar?: string }) => {
 }
 
 // ─── Message bubble ───────────────────────────────────────────────────────────
-function MsgBubble({ msg, isMe, onReact, onReply, onDelete, userName }: {
+function MsgBubble({ msg, isMe, onReact, onReply, onDelete, userName, isAnonymous }: {
   msg: Msg; isMe: boolean
   onReact: (id: string, emoji: string) => void
   onReply: (msg: Msg) => void
   onDelete: (id: string) => void
   userName?: string
+  isAnonymous?: boolean
 }) {
   const [showEmoji, setShowEmoji] = useState(false)
 
@@ -94,7 +106,7 @@ function MsgBubble({ msg, isMe, onReact, onReply, onDelete, userName }: {
 
   return (
     <div className={clsx('flex gap-2 group px-4 mb-3', isMe ? 'justify-end' : 'justify-start')}>
-      {!isMe && <Av name={userName} />}
+      {!isMe && <Av name={userName} isAnonymous={isAnonymous} />}
       <div className="max-w-[75%] space-y-1">
         {msg.replyTo && (
           <div className="text-[10px] opacity-60 border-l-2 border-current pl-2 mb-1 truncate">
@@ -188,41 +200,41 @@ export default function ChatPage() {
   }, [user, chatId, scrollBottom])
 
   // Fetch messages + chat info
-  useEffect(() => {
+  const loadChatData = useCallback(async () => {
     if (!chatId) return
-    const load = async () => {
-      try {
-        const [msgRes, chatRes] = await Promise.all([
-          api.get(`/chats/messages/${chatId}`).catch(() => ({ data: [] })),
-          api.get(`/chats?userId=${user?.id}`).catch(() => ({ data: [] }))
-        ])
-        const msgs = Array.isArray(msgRes.data) ? msgRes.data : msgRes.data?.data || []
-        setMessages(msgs)
-        const chats = Array.isArray(chatRes.data) ? chatRes.data : chatRes.data?.data || []
-        const thisChat = chats.find((c: any) => c._id === chatId)
-        setChatInfo(thisChat)
-        if (thisChat) {
-          const other = thisChat.users?.find((u: any) => u.userId !== user?.id)
-          if (other?.userId) {
-            const profileRes = await api.get(`/users/profile/${other.userId}`).catch(() => null)
-            setOtherUser(profileRes?.data?.data || { userId: other.userId, name: other.userId })
-          }
-        } else {
-          // chatId might be a userId (direct link from search)
-          const profileRes = await api.get(`/users/profile/${chatId}`).catch(() => null)
-          if (profileRes?.data?.data) {
-            setOtherUser(profileRes.data.data)
-            // Create/access chat
-            const chatCreate = await api.post('/chats', { userId: user?.id, targetUserId: chatId }).catch(() => null)
-            if (chatCreate?.data?._id) {
-              router.replace(`/chat/${chatCreate.data._id}`)
-            }
+    try {
+      const [msgRes, chatRes] = await Promise.all([
+        api.get(`/chats/messages/${chatId}`).catch(() => ({ data: [] })),
+        api.get(`/chats?userId=${user?.id}`).catch(() => ({ data: [] }))
+      ])
+      const msgs = Array.isArray(msgRes.data) ? msgRes.data : msgRes.data?.data || []
+      setMessages(msgs)
+      const chats = Array.isArray(chatRes.data) ? chatRes.data : chatRes.data?.data || []
+      const thisChat = chats.find((c: any) => c._id === chatId)
+      setChatInfo(thisChat)
+      
+      if (thisChat) {
+        const other = thisChat.users?.find((u: any) => u.userId !== user?.id)
+        if (other?.userId) {
+          const profileRes = await api.get(`/users/profile/${other.userId}`).catch(() => null)
+          setOtherUser(profileRes?.data?.data || { userId: other.userId, name: other.userId })
+        }
+      } else {
+        // chatId might be a userId (direct link from search)
+        const profileRes = await api.get(`/users/profile/${chatId}`).catch(() => null)
+        if (profileRes?.data?.data) {
+          setOtherUser(profileRes.data.data)
+          // Create/access chat
+          const chatCreate = await api.post('/chats', { userId: user?.id, targetUserId: chatId }).catch(() => null)
+          if (chatCreate?.data?._id) {
+            router.replace(`/chat/${chatCreate.data._id}`)
           }
         }
-      } catch (e) { console.error(e) }
-    }
-    load()
-  }, [chatId, user?.id])
+      }
+    } catch (e) { console.error(e) }
+  }, [chatId, user?.id, router])
+
+  useEffect(() => { loadChatData() }, [loadChatData])
 
   useEffect(() => { scrollBottom() }, [messages, scrollBottom])
 
@@ -265,6 +277,13 @@ export default function ChatPage() {
     setMessages(prev => prev.filter(m => m._id !== msgId))
   }
 
+  const handleRevealIdentity = async () => {
+    try {
+      await api.post('/chats/reveal-identity', { chatId, userId: user?.id })
+      loadChatData()
+    } catch (e) { console.error(e) }
+  }
+
   const sendSpecial = () => {
     if (modal === 'poll') {
       const opts = pollOpts.filter(o => o.trim())
@@ -287,7 +306,9 @@ export default function ChatPage() {
     setModal(null)
   }
 
-  const displayName = chatInfo?.chatName || otherUser?.name || otherUser?.userId || (chatId as string).slice(0, 8)
+  const isAnonymous = chatInfo?.isAnonymous && !chatInfo?.revealedUsers?.includes(otherUser?.userId)
+  const haveIRevealed = chatInfo?.revealedUsers?.includes(user?.id)
+  const displayName = isAnonymous ? 'Anonymous User' : (chatInfo?.chatName || otherUser?.name || otherUser?.userId || (chatId as string).slice(0, 8))
 
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950 overflow-hidden">
@@ -296,36 +317,75 @@ export default function ChatPage() {
       <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b dark:border-gray-800 px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl"><ArrowLeft size={20} className="dark:text-white"/></button>
-          <button onClick={() => setShowProfile(true)} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black uppercase">
-              {displayName[0]}
+          <button onClick={() => !isAnonymous && setShowProfile(true)} className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black uppercase overflow-hidden">
+              {isAnonymous ? <ShieldQuestion size={20} /> : (otherUser?.avatar ? <img src={otherUser.avatar} className="w-full h-full object-cover" /> : displayName[0])}
             </div>
             <div className="text-left">
               <p className="font-black text-sm dark:text-white">{displayName}</p>
               <p className="text-[10px] text-gray-400 font-bold">
-                {otherTyping ? '✍️ typing...' : 'tap to view profile'}
+                {otherTyping ? 'Typing...' : (isAnonymous ? 'Anonymous Blind Date' : 'Tap to view profile')}
               </p>
             </div>
           </button>
         </div>
         <div className="flex gap-1">
-          <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"><Phone size={19}/></button>
-          <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"><Video size={19}/></button>
-          <button onClick={() => setShowProfile(true)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"><Info size={19}/></button>
+          {!isAnonymous && (
+            <>
+              <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"><Phone size={19}/></button>
+              <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"><Video size={19}/></button>
+            </>
+          )}
+          <button onClick={() => !isAnonymous && setShowProfile(true)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors"><Info size={19}/></button>
         </div>
       </div>
 
+      {/* ── Anonymous Reveal Banner ── */}
+      {chatInfo?.isAnonymous && !chatInfo?.revealedUsers?.includes(otherUser?.userId) && (
+        <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-3 border-b border-pink-500/20 flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <div className="bg-pink-500 p-2 rounded-xl text-white shadow-lg shadow-pink-500/20">
+              <Eye size={16} />
+            </div>
+            <div>
+              <p className="text-xs font-black text-pink-600 dark:text-pink-400 uppercase tracking-tighter">Blind Date Mode</p>
+              <p className="text-[10px] text-gray-500 font-bold">Share your identity to see each other's profiles!</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleRevealIdentity}
+            disabled={haveIRevealed}
+            className={clsx(
+              "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+              haveIRevealed ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-pink-500 text-white hover:bg-pink-600 active:scale-95 shadow-md shadow-pink-500/20"
+            )}
+          >
+            {haveIRevealed ? 'Sent Request' : 'Reveal Identity'}
+          </button>
+        </div>
+      )}
+
       {/* ── Messages ── */}
       <div className="flex-1 overflow-y-auto py-4 space-y-1">
+        {messages.length === 0 && !otherTyping && (
+          <div className="px-6 py-12 flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 flex items-center justify-center mb-3">
+              <MessageSquare size={24} />
+            </div>
+            <p className="font-black text-sm text-gray-900 dark:text-white">No messages yet</p>
+            <p className="text-xs text-gray-500 mt-1">Start the conversation with {displayName}.</p>
+          </div>
+        )}
         {messages.map(msg => (
           <MsgBubble key={msg._id} msg={msg}
-            isMe={msg.sender === user?.id}
-            userName={otherUser?.name}
+            isMe={getSenderId(msg.sender) === user?.id}
+            userName={displayName}
+            isAnonymous={isAnonymous && getSenderId(msg.sender) !== user?.id}
             onReact={handleReact} onReply={setReplyTo} onDelete={handleDelete} />
         ))}
         {otherTyping && (
           <div className="flex gap-2 px-4">
-            <Av name={otherUser?.name} avatar={otherUser?.avatar} />
+            <Av name={displayName} isAnonymous={isAnonymous} />
             <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 px-4 py-3 rounded-2xl rounded-bl-sm">
               <div className="flex gap-1">{[0,1,2].map(i => <div key={i} className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: `${i*0.15}s` }}/>)}</div>
             </div>
@@ -352,7 +412,7 @@ export default function ChatPage() {
           <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2.5 border-2 border-transparent focus-within:border-blue-500 transition-all">
             <textarea value={text} onChange={e => handleTyping(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg() } }}
-              placeholder="Message..." rows={1}
+              placeholder={`Message ${displayName}...`} rows={1}
               className="w-full bg-transparent outline-none dark:text-white resize-none max-h-28 text-sm" />
           </div>
           <button onClick={() => sendMsg()} disabled={!text.trim() || sending}
@@ -390,8 +450,8 @@ export default function ChatPage() {
           <div className="bg-white dark:bg-gray-900 rounded-[2rem] w-full max-w-sm shadow-2xl border dark:border-gray-800 overflow-hidden animate-in slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
             <div className="h-24 bg-gradient-to-br from-blue-500 to-indigo-600" />
             <div className="px-6 pb-6 -mt-10">
-              <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-xl flex items-center justify-center text-3xl font-black text-blue-600 uppercase mb-4">
-                {otherUser?.avatar ? <img src={otherUser.avatar} className="w-full h-full object-cover rounded-3xl" alt="" /> : displayName[0]}
+              <div className="w-20 h-20 rounded-3xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-xl flex items-center justify-center text-3xl font-black text-blue-600 uppercase mb-4 overflow-hidden">
+                {otherUser?.avatar ? <img src={otherUser.avatar} className="w-full h-full object-cover" alt="" /> : displayName[0]}
               </div>
               <h2 className="font-black text-xl dark:text-white">{otherUser?.name || displayName}</h2>
               <p className="text-sm text-gray-400 mb-1">@{otherUser?.userId || chatId}</p>

@@ -1,21 +1,44 @@
 import Ride from '../models/Ride.js';
 
+const vehicleRates = {
+  bike: 8,
+  auto: 12,
+  mini: 15,
+  sedan: 22
+};
+
+const getFareEstimates = async (req, res) => {
+  try {
+    const { pickup, drop } = req.body;
+    // Mock distance calculation
+    const distance = Math.floor(Math.random() * 15) + 2; // 2-17 km
+    
+    const estimates = Object.keys(vehicleRates).map(type => ({
+      type,
+      fare: distance * vehicleRates[type],
+      distance: `${distance} km`,
+      duration: `${distance * 3} mins`
+    }));
+
+    res.json({ status: 'success', data: estimates });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const bookRide = async (req, res) => {
   try {
-    const { userId, pickup, drop } = req.body;
+    const { userId, pickup, drop, vehicleType, fare, distance, duration } = req.body;
     
-    // Simple fare estimation logic (could use distance matrix API in real app)
-    const estimatedDistance = Math.floor(Math.random() * 20) + 1; // 1-20 km
-    const estimatedFare = estimatedDistance * 15; // 15 units per km
-
     const ride = new Ride({
       userId,
       pickup,
       drop,
+      vehicleType: vehicleType || 'mini',
       status: 'searching',
-      fare: estimatedFare,
-      distance: `${estimatedDistance} km`,
-      duration: `${estimatedDistance * 3} mins`
+      fare,
+      distance,
+      duration
     });
 
     await ride.save();
@@ -62,7 +85,11 @@ const getActiveRide = async (req, res) => {
 // Driver: get all pending rides (searching status)
 const getPendingRides = async (req, res) => {
   try {
-    const rides = await Ride.find({ status: 'searching' }).sort({ createdAt: -1 }).limit(20);
+    const { vehicleType } = req.query;
+    const query = { status: 'searching' };
+    if (vehicleType) query.vehicleType = vehicleType;
+
+    const rides = await Ride.find(query).sort({ createdAt: -1 }).limit(20);
     res.json(rides);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -91,4 +118,4 @@ const rejectRide = async (req, res) => {
   }
 };
 
-export default { bookRide, updateRideStatus, getRideHistory, getActiveRide, getPendingRides, acceptRide, rejectRide };
+export default { getFareEstimates, bookRide, updateRideStatus, getRideHistory, getActiveRide, getPendingRides, acceptRide, rejectRide };

@@ -42,6 +42,10 @@ app.use(hpp());
 
 app.use('/chats', chatRoutes);
 app.use('/messages', messageRoutes);
+app.use('/chats/messages', messageRoutes); // Compatibility for gateway/frontend route shape
+app.use('/', chatRoutes); // Fallback for root calls
+app.use('/api/chats', chatRoutes); // Robustness fallback
+app.use('/api/chats/messages', messageRoutes); // Robustness fallback
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Chat Service is healthy', correlationId: req.correlationId });
