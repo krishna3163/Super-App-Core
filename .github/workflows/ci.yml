@@ -93,7 +93,7 @@ jobs:
           curl -f http://localhost:5001/health || exit 1
           kill %1
         env:
-          NODE_ENV: test
+          NODE_ENV: smoke
 
       - name: Test payment-service health
         working-directory: services/payment-service
