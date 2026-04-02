@@ -51,7 +51,8 @@ export default function HotelPage() {
     queryFn: async () => {
       try {
         const { data } = await api.get('/hotels/featured')
-        return (data.hotels || data.data || []).length > 0 ? (data.hotels || data.data) : FALLBACK_HOTELS
+        const list = data.hotels || data.data || []
+        return list.length > 0 ? list : FALLBACK_HOTELS
       } catch {
         return FALLBACK_HOTELS
       }

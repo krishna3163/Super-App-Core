@@ -23,7 +23,8 @@ export default function ServicesHubPage() {
     queryFn: async () => {
       try {
         const { data } = await api.get('/economy/providers/top')
-        return (data.providers || data.data || []).length > 0 ? (data.providers || data.data) : FALLBACK_PROVIDERS
+        const list = data.providers || data.data || []
+        return list.length > 0 ? list : FALLBACK_PROVIDERS
       } catch {
         return FALLBACK_PROVIDERS
       }
