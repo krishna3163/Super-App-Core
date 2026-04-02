@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
+
+  // When CAPACITOR_BUILD=1 (for APK), export as static HTML
+  ...(process.env.CAPACITOR_BUILD === '1' && { output: 'export' }),
+
   images: {
+    // Static export requires unoptimized images (Capacitor APK build)
+    unoptimized: process.env.CAPACITOR_BUILD === '1',
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: 'https',
@@ -15,8 +26,46 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.svgrepo.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
     ],
+  },
+
+  experimental: {
+    // CSS optimization disabled: next-with-plugins can cause build issues with Tailwind 3.4
+    optimizeCss: false,
+  },
+
+  // Cache headers for static assets (web server only, not used in static export)
+  async headers() {
+    if (process.env.CAPACITOR_BUILD === '1') return [];
+    return [
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/icons/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+        ],
+      },
+    ];
   },
 }
 
