@@ -1,329 +1,428 @@
-# 🚀 SuperApp - The Ultimate Everything Platform
+# 🚀 SuperApp — The Ultimate Everything Platform
 
-**"One App to rule them all. Chat, shop, ride, eat, work, and play in a single unified ecosystem."**
+<div align="center">
 
----
+**"One App to rule them all. Chat, shop, ride, eat, work, and play in one unified ecosystem."**
 
-## 📖 SECTION 2: PROJECT DESCRIPTION
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=flat-square&logo=node.js)](https://nodejs.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb)](https://www.mongodb.com/cloud/atlas)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker)](https://docs.docker.com/compose)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
+[![Android APK](https://img.shields.io/badge/Android-APK%20Build-3DDC84?style=flat-square&logo=android)](./BUILDING_APK.md)
 
-### What is this Super App?
-This project is a massive, production-ready **Microservices-based Super App**. Instead of having 20 different apps on your phone for chatting, ordering food, booking rides, and checking social media, this app combines everything into one seamless experience.
-
-### Why does it exist?
-Modern users suffer from "app fatigue"—constantly switching between applications, managing different accounts, and sharing payment details across dozens of platforms. This project solves that by unifying identity, wallet, and communication across every daily digital need.
-
-### Major Inspirations
-We took the best features from industry leaders and combined them:
-*   💬 **WhatsApp** - Fast, secure 1-to-1 and group chatting.
-*   📢 **Telegram** - Unlimited broadcast channels and bots.
-*   🎮 **Discord** - Role-based community servers with voice/text channels.
-*   🚗 **Uber / Ola** - Real-time ride booking and driver tracking.
-*   🛒 **OLX** - C2C marketplace for buying and selling used goods.
-*   🍔 **Zomato / Swiggy** - Restaurant browsing and food delivery.
-*   💼 **LinkedIn / GitHub** - Professional resumes and developer portfolio tracking.
-*   🟢 **WeChat** - A robust ecosystem of "Mini Apps" running inside the main app.
+</div>
 
 ---
 
-## ✨ SECTION 3: FEATURES (IN DETAIL)
+## 📖 What is SuperApp?
 
-### 1. 💬 Chat System (Advanced)
-*   **Private Chat:** Fast 1-to-1 messaging with read receipts (✓✓) and typing indicators.
-*   **Groups & Communities:** Create WhatsApp-style groups or Discord-style servers with roles.
-*   **Channels:** Telegram-style broadcast channels for announcements.
-*   **Voice & Video Calls:** 1:1 and Group calls powered by WebRTC.
-*   **Voice Notes:** Hold-to-record voice messages with waveform playback.
-*   **Message Actions:** React (👍❤️🔥), reply, forward, edit, and delete messages.
-*   **Privacy Features:** Disappearing messages (24h/7d) and View-Once media that deletes after opening.
+SuperApp is a **production-ready, microservices-based super app** built for the Indian market. Instead of juggling 20 different apps, everything lives in one unified platform — chat, food delivery, ride hailing, marketplace, dating, professional networking, payments, and more.
 
-### 2. 🌍 Social System
-*   **Unified Feed:** A mix of short text (Tweets), media posts (Facebook), and threaded discussions (Reddit).
-*   **Interactions:** Like, dislike (upvote/downvote), comment, and repost.
+### 🌟 Inspired by the best
 
-### 3. 🛍️ Marketplace
-*   **Buy & Sell:** List products with images, price, and location.
-*   **Negotiation:** Dedicated chat rooms for buyers and sellers to negotiate prices.
-*   **Order System:** Mark items as sold and process payments.
-
-### 4. 🚖 Ride System
-*   **Dual Mode:** Switch between "Rider" (book rides) and "Driver" (earn money).
-*   **Real-time Matching:** Finds nearest drivers using geo-location math.
-*   **Earnings Tracker:** Drivers can track daily/weekly income.
-
-### 5. 🍕 Food Delivery
-*   **Restaurant Listing:** Browse local restaurants and their menus.
-*   **Order Tracking:** Live status from "Preparing" to "Out for Delivery".
-
-### 6. 🛠️ Service Marketplace
-*   **Hire Local Pros:** Find electricians, plumbers, developers, or designers.
-*   **Booking Flow:** Chat with the provider, confirm the job, and pay securely.
-
-### 7. 📊 Business Dashboard
-*   **Role-Based Views:** Dynamic dashboards that change if you are a seller, driver, or restaurant owner.
-*   **Analytics:** View earnings, total orders, and engagement charts.
-
-### 8. 🤖 AI Features
-*   **Chat Summary:** AI reads long group chats and gives you a bullet-point summary.
-*   **Smart Reply:** AI suggests 3 contextual replies based on the conversation.
-*   **Ask AI:** Use `/ask` in any chat to instantly get answers from Google Gemini/OpenAI.
-
-### 9. 💳 Payment System
-*   **UPI Integration:** Support for standard UPI IDs and QR codes.
-*   **Virtual Wallet:** Store real currency and in-app "coins" for tipping and micro-transactions.
-
-### 10. 👨‍💻 Developer Profile
-*   **Coding Stats:** Connect LeetCode, Codeforces, and GitHub to show your ranks and streaks.
-*   **Project Showcase:** Display up to 10 portfolio projects on your public page.
-
-### 11. 🧩 Mini Apps
-*   **App inside an App:** Run games, weather tools, or utility apps inside the Super App without installing anything new.
-
-### 12. 🔒 Security
-*   **JWT Auth:** Secure, short-lived tokens with refresh token rotation.
-*   **Rate Limiting:** Prevents hackers from brute-forcing passwords or spamming APIs.
-*   **Encryption:** Sensitive data is encrypted using AES-256-GCM.
+| App | Feature Borrowed |
+|-----|-----------------|
+| 💬 WhatsApp | Fast 1-to-1 & group chat with read receipts |
+| 📢 Telegram | Broadcast channels and bots |
+| 🎮 Discord | Community servers with roles & channels |
+| 🚗 Uber / Ola | Real-time ride booking & driver tracking |
+| 🛒 OLX | C2C marketplace for buying & selling |
+| 🍔 Zomato / Swiggy | Restaurant browsing & food delivery |
+| 💼 LinkedIn / GitHub | Professional profiles & coding stats |
+| 🟢 WeChat | Mini Apps ecosystem inside the main app |
+| 👻 Snapchat | Disappearing messages & view-once media |
 
 ---
 
-## 🛠️ SECTION 4: TECH STACK
+## ✨ Feature Highlights
 
-**Frontend:**
-*   **Next.js (App Router):** Fast, SEO-friendly React framework.
-*   **Tailwind CSS:** For beautiful, responsive styling.
-*   **Zustand & React Query:** For global state management and API caching.
+<details>
+<summary><b>💬 Chat System</b></summary>
 
-**Backend:**
-*   **Node.js & Express.js:** Fast and scalable backend servers.
-*   **WebSockets (Socket.io):** For real-time chat, calls, and live locations.
-*   **WebRTC:** For peer-to-peer audio and video streaming.
+- Private 1-to-1 messaging with read receipts (✓✓) and typing indicators
+- WhatsApp-style groups & Discord-style community servers with roles
+- Telegram-style broadcast channels
+- Voice & Video calls (WebRTC)
+- Hold-to-record voice notes with waveform playback
+- Message reactions (👍❤️🔥), reply, forward, edit, delete
+- Disappearing messages (24h / 7d) and View-Once media
+</details>
 
-**Database:**
-*   **MongoDB (Atlas):** NoSQL database, perfect for flexible schemas and Geo-spatial queries.
+<details>
+<summary><b>🌍 Social Feed</b></summary>
 
-**AI & Third-Party:**
-*   **Google Gemini AI:** For smart replies and chat summarization.
+- Unified feed mixing tweets, media posts, and Reddit-style threads
+- Like, comment, repost, and upvote/downvote
+- Story/status updates (Instagram-like)
+</details>
+
+<details>
+<summary><b>🛍️ Marketplace</b></summary>
+
+- List items with images, price, and location
+- Buyer-seller negotiation chat rooms
+- Order management and payment processing
+</details>
+
+<details>
+<summary><b>🚖 Ride Hailing</b></summary>
+
+- Rider mode (book rides) and Driver mode (earn money)
+- Real-time driver matching via geo-location
+- Earnings tracker for drivers
+</details>
+
+<details>
+<summary><b>🍕 Food Delivery</b></summary>
+
+- Browse restaurants and menus
+- Live order tracking: Preparing → Picked up → Delivered
+</details>
+
+<details>
+<summary><b>🤖 AI Features (Google Gemini)</b></summary>
+
+- Chat summary: AI generates bullet-point summaries of long group chats
+- Smart Reply: 3 contextual AI-generated reply suggestions
+- `/ask` command: Ask anything in any chat
+</details>
+
+<details>
+<summary><b>💳 Payments & Wallet</b></summary>
+
+- UPI ID and QR code support
+- Virtual wallet with real currency and in-app coins
+</details>
+
+<details>
+<summary><b>👨‍💻 Developer Profile</b></summary>
+
+- LeetCode, Codeforces, GitHub integration
+- Portfolio showcase with up to 10 projects
+</details>
+
+<details>
+<summary><b>🧩 Mini Apps</b></summary>
+
+- Run games, tools, and utility apps inside SuperApp — no extra install
+</details>
 
 ---
 
-## 📂 SECTION 5: PROJECT STRUCTURE
+## 🛠️ Tech Stack
 
-This project uses a **Microservices Architecture**. Instead of one giant backend file, the backend is split into multiple small, independent services.
+### Frontend
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 16** (App Router) | Fast, SEO-friendly React framework |
+| **Tailwind CSS 3.4** | Utility-first styling |
+| **Zustand** | Global auth & app state |
+| **React Query (@tanstack)** | Server state caching & sync |
+| **Axios** | HTTP client with JWT interceptor |
+| **Socket.io-client** | Real-time chat |
+| **WebRTC** | Peer-to-peer audio/video |
+| **Framer Motion** | Animations |
+| **Capacitor** | Android / iOS APK packaging |
 
-```text
+### Backend
+| Technology | Purpose |
+|------------|---------|
+| **Node.js + Express.js** | Microservice servers |
+| **MongoDB Atlas + Mongoose** | Primary database |
+| **Redis** | Caching & session store |
+| **Socket.io** | WebSocket server (chat) |
+| **JWT** | Stateless authentication |
+| **Helmet + CORS + rate-limit** | Security hardening |
+
+### Infrastructure
+| Technology | Purpose |
+|------------|---------|
+| **Docker Compose** | Local dev orchestration |
+| **Convex** | Real-time pub/sub events |
+| **Google Gemini API** | AI features |
+
+---
+
+## 📂 Project Structure
+
+```
 /Super-App-Core
 │
-├── /frontend/                 # The Next.js user interface
-│   ├── /app                   # Pages and routing (e.g., /chat, /rides)
-│   ├── /components            # Reusable UI parts (Buttons, Navbars)
-│   └── /services              # Axios API clients talking to the backend
+├── /frontend/                  # Next.js PWA (32+ pages)
+│   ├── /app                    # Pages: /chat, /rides, /food, /marketplace…
+│   ├── /components             # Reusable UI: Layout, Navbar, Cards…
+│   ├── /services               # Axios API clients (api.ts, authApi.ts)
+│   ├── /store                  # Zustand stores (useAuthStore.ts)
+│   ├── /hooks                  # useAuth, usePermissions…
+│   ├── capacitor.config.ts     # Android/iOS APK config
+│   └── next.config.js          # Next.js + perf settings
 │
-├── /api-gateway/              # The main entry point for all backend traffic. 
-│                              # Handles Security, JWT checking, and routes requests to services.
+├── /api-gateway/               # Single entry point :5050
+│                               # JWT verification, rate limiting, proxying
 │
-├── /services/                 # Contains 15+ independent microservices
-│   ├── /auth-service          # Handles Login, Signup, Passwords
-│   ├── /chat-service          # Handles messaging
-│   ├── /economy-service       # Handles payments, gig-workers, services
-│   ├── /ai-service            # Talks to Google Gemini/OpenAI
-│   └── ...                    # (food, ride, marketplace, etc.)
+├── /services/                  # 39 independent microservices
+│   ├── /auth-service      :5001   # Login, signup, OAuth, 2FA
+│   ├── /user-service      :5002   # Profiles, preferences
+│   ├── /chat-service      :5003   # Messaging + Socket.io
+│   ├── /social-service    :5004   # Feed, posts, likes
+│   ├── /ride-service      :5009   # Ride booking
+│   ├── /food-service      :5010   # Food delivery
+│   ├── /payment-service   :5032   # UPI, wallet
+│   ├── /ai-service        :5033   # Gemini AI
+│   └── …(see full list below)
 │
-└── start-app.mjs              # Master script to run everything at once
+├── /convex/                    # Convex real-time schema & functions
+├── /k8s/                       # Kubernetes manifests
+├── docker-compose.yml          # One-command local dev
+├── start-app.mjs               # Master startup script
+└── BUILDING_APK.md             # Android APK build guide
 ```
 
 ---
 
-## 🏗️ SECTION 6: ARCHITECTURE
+## 🏗️ Architecture
 
-How does data flow in this app?
-
-```text
-[ User's Browser / Phone ]  (Next.js Frontend)
-          │
-          ▼  (HTTP Requests / WebSockets)
-          │
-[ API Gateway (Port 5050) ] (Checks JWT Token, Blocks spam, routes traffic)
-          │
-          ├──────────────► [ Auth Service (Port 5001) ]   ──► (Auth DB)
-          ├──────────────► [ Chat Service (Port 5003) ]   ──► (Chat DB)
-          ├──────────────► [ Ride Service (Port 5009) ]   ──► (Ride DB)
-          └──────────────► [ AI Service   (Port 5033) ]   ──► (Gemini API)
 ```
-*Every service runs on its own port and connects to its own isolated database collection.*
+[ Browser / Mobile App ]  ← Next.js PWA + Capacitor APK
+          │
+          ▼  HTTP / WebSockets
+          │
+[ API Gateway :5050 ]  ← JWT check, rate limit, proxy
+          │
+          ├──► auth-service      :5001  ──► MongoDB
+          ├──► user-service      :5002  ──► MongoDB
+          ├──► chat-service      :5003  ──► MongoDB + Redis + Socket.io
+          ├──► social-service    :5004  ──► MongoDB
+          ├──► ride-service      :5009  ──► MongoDB
+          ├──► food-service      :5010  ──► MongoDB
+          ├──► payment-service   :5032  ──► MongoDB
+          └──► ai-service        :5033  ──► Google Gemini API
+
+Convex (cloud) ← pub/sub for notifications, activity streams
+```
 
 ---
 
-## 🔗 SECTION 7: HOW FRONTEND CONNECTS TO BACKEND
+## ⚙️ All 39 Microservices
 
-The frontend uses **Axios** to talk to the backend. 
-We have a central API Gateway running on `http://localhost:5050`. The frontend NEVER talks directly to the microservices (like port 5003). It only talks to the Gateway.
-
-1. User logs in. Backend returns a `JWT Token`.
-2. Frontend stores this token in LocalStorage (using Zustand).
-3. We use an **Axios Interceptor**. Every time the frontend makes an API call, it automatically attaches the JWT token to the headers:
-   `Authorization: Bearer <token>`
-4. The API Gateway sees the token, verifies the user is legit, and passes the request to the correct microservice.
+| Service | Port | Purpose |
+|---------|------|---------|
+| auth-service | 5001 | JWT login/register, OAuth, 2FA |
+| user-service | 5002 | User profiles, preferences |
+| chat-service | 5003 | 1-to-1 + group chat, Socket.io |
+| social-service | 5004 | Feed, posts, likes, comments |
+| professional-service | 5006 | Dev profiles, LeetCode/GitHub stats |
+| dating-service | 5007 | Dating profiles, matching |
+| marketplace-service | 5008 | C2C buy/sell listings |
+| ride-service | 5009 | Ride booking, driver matching |
+| food-service | 5010 | Restaurant + food delivery |
+| productivity-service | 5011 | Tasks, notes, calendar |
+| mini-app-service | 5012 | Mini apps ecosystem |
+| notification-service | 5013 | Push notifications |
+| dashboard-service | 5024 | User dashboards |
+| global-search-service | 5025 | Unified search |
+| settings-service | 5027 | User settings/privacy |
+| super-communication-service | 5028 | Channels, broadcast |
+| advanced-interactions-service | 5029 | Reactions, message actions |
+| snap-service | 5031 | Disappearing messages/media |
+| payment-service | 5032 | UPI, wallet, transactions |
+| ai-service | 5033 | Gemini AI: summaries, smart replies |
+| cart-service | 5035 | Shopping cart |
+| order-service | 5036 | Order processing/tracking |
+| analytics-service | — | Usage analytics |
+| business-dashboard-service | — | Seller/driver analytics |
+| community-service | — | Community management |
+| discord-service | — | Discord-like servers |
+| economy-service | — | Gig economy, freelancing |
+| game-service | — | In-app games |
+| hotel-service | — | Hotel booking |
+| monetization-service | — | Creator economy |
+| story-service | — | Stories/status |
+| … and more | — | |
 
 ---
 
-## 💻 SECTION 8: INSTALLATION (Step-by-Step)
+## 💻 Installation & Setup
 
-Follow these steps exactly to run the Super App on your local machine.
+### Prerequisites
+- Node.js 18+
+- Docker + Docker Compose (recommended)
+- MongoDB Atlas account (free tier works)
 
-### Step 1: Clone the repository
+### Option A: Docker Compose (Recommended ✅)
+
 ```bash
-# Download the code to your computer
+# 1. Clone the repository
 git clone https://github.com/your-username/Super-App-Core.git
-
-# Go into the project folder
-cd Super-App-Core
-```
-
-### Step 2: Install Dependencies
-Because this is a microservices app, you need to install NPM packages for the frontend, gateway, and ALL services.
-
-```bash
-# Go to frontend and install
-cd frontend
-npm install
-
-# Go back to main folder, then into gateway
-cd ../api-gateway
-npm install
-
-# Repeat for services...
-cd ../services/auth-service
-npm install
-# (You will need to do this for every service folder you want to run)
-```
-
-### Step 3: Setup Environment Variables
-Every service needs a `.env` file to know what port to run on and how to connect to the database. (See Section 9 for details).
-
-### Step 4: Run the Backend & Frontend
-To make life easy, we created a master startup script.
-
-```bash
-# Go back to the main root folder
 cd Super-App-Core
 
-# Run the master boot script using Node.js
-# This will open multiple background processes for the Gateway, Services, and Frontend
+# 2. Copy and configure environment variables
+cp .env.example .env
+# Edit .env with your MongoDB URI, JWT_SECRET, and Gemini API key
+
+# 3. Start everything in one command
+docker-compose up --build
+```
+
+Open `http://localhost:3000` in your browser.
+
+### Option B: Manual (without Docker)
+
+```bash
+# 1. Clone
+git clone https://github.com/your-username/Super-App-Core.git
+cd Super-App-Core
+
+# 2. Install frontend
+cd frontend && npm install
+
+# 3. Install API Gateway
+cd ../api-gateway && npm install
+
+# 4. Install each service (repeat per service)
+cd ../services/auth-service && npm install
+cd ../services/chat-service && npm install
+# … repeat for each service you want to run
+
+# 5. Create .env files (see Environment Variables section below)
+
+# 6. Run everything with the master script
+cd ../..
 node start-app.mjs
 ```
 
 ---
 
-## 🔐 SECTION 9: ENVIRONMENT VARIABLES
+## 🔐 Environment Variables
 
-You must create a `.env` file in **every** service folder (`/api-gateway`, `/services/auth-service`, etc.).
-
-Here is a standard template:
+Create a `.env` file in each service folder. Minimum required variables:
 
 ```env
-# The port this specific service runs on
-PORT=5001 
+# Service port (each service has its own)
+PORT=5001
 
-# Your MongoDB Atlas Connection String
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/superapp?retryWrites=true&w=majority
+# MongoDB Atlas connection string
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster0.mongodb.net/superapp?retryWrites=true&w=majority
 
-# A highly secret string used to sign JWT tokens. Must be exactly the SAME across all services!
-JWT_SECRET=my_super_secret_key_123
+# JWT secret — MUST be identical across ALL services
+JWT_SECRET=your_super_secret_key_here
 
-# (Only needed in /services/ai-service)
-GEMINI_API_KEY=your_google_ai_key_here
+# Redis URL (required by chat-service)
+REDIS_URL=redis://localhost:6379
+
+# Google Gemini API key (required by ai-service only)
+GEMINI_API_KEY=your_gemini_key_here
+```
+
+Frontend `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5050/api
+NEXT_PUBLIC_CONVEX_URL=https://your-convex-url.convex.cloud
 ```
 
 ---
 
-## 🏃‍♂️ SECTION 10: RUNNING THE PROJECT
+## 🏃 Running the Project
 
-Once started, the system operates on the following ports:
-
-*   🌐 **Frontend Website:** `http://localhost:3000` (Open this in your browser!)
-*   🚪 **API Gateway:** `http://localhost:5050` (All API calls go here)
-*   ⚙️ **Microservices:** `5001` through `5033` (Running in the background)
-
----
-
-## 🚀 SECTION 11: DEPLOYMENT
-
-To put this app on the live internet, follow these steps:
-
-### 1. Database (MongoDB Atlas)
-1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) and create a free account.
-2. Create a new Cluster.
-3. In "Database Access", create a new database user and password.
-4. In "Network Access", allow IP `0.0.0.0/0` (so your hosted backend can connect).
-5. Click "Connect" -> "Connect your application" and copy the `MONGO_URI`.
-
-### 2. Backend (Render / Railway)
-1. Create an account on [Render](https://render.com) or [Railway](https://railway.app).
-2. Create a new "Web Service".
-3. Connect your GitHub repository.
-4. **Important:** Because this is a microservices app, you must deploy the `api-gateway` and each `service` as separate web services.
-5. In the dashboard settings, paste your `MONGO_URI` and `JWT_SECRET` into the Environment Variables section.
-6. Deploy! Copy the new live URL for your API Gateway.
-
-### 3. Frontend (Vercel)
-1. Go to [Vercel](https://vercel.com) and connect your GitHub.
-2. Select the `frontend` folder as the Root Directory.
-3. In Environment Variables, add:
-   `NEXT_PUBLIC_API_URL = https://your-live-api-gateway-url.onrender.com/api`
-4. Click Deploy!
+| What | URL |
+|------|-----|
+| 🌐 Frontend (Web App) | `http://localhost:3000` |
+| 🚪 API Gateway | `http://localhost:5050` |
+| 🔐 Auth Service | `http://localhost:5001` |
+| 💬 Chat Service | `http://localhost:5003` |
+| 🚖 Ride Service | `http://localhost:5009` |
+| 🍕 Food Service | `http://localhost:5010` |
+| 🤖 AI Service | `http://localhost:5033` |
 
 ---
 
-## 📡 SECTION 12: API ENDPOINTS (BASIC)
+## 📱 Android APK Build
 
-Here are the main endpoints exposed through the API Gateway (`http://localhost:5050`):
+SuperApp can be packaged as a native Android APK using **Capacitor**.
 
-*   **Auth:** 
-    *   `POST /api/auth/signup` - Register user
-    *   `POST /api/auth/login` - Login and get JWT
-*   **Chat:** 
-    *   `POST /api/chats/message` - Send a message
-    *   `GET /api/chats/:chatId/messages` - Get chat history
-*   **Economy (Marketplace/Ride/Service):**
-    *   `GET /api/economy/services/providers/search` - Find freelancers
-    *   `POST /api/economy/payments/initiate` - Start a UPI payment
-*   **Social:**
-    *   `GET /api/social/unified/feed` - Get social feed
-*   **AI:**
-    *   `POST /api/ai/ask` - Ask the AI bot a question
+```bash
+cd frontend
+npm install
+npm run build:export      # Build & export Next.js as static HTML
+npx cap add android       # Add Android platform (first time only)
+npx cap sync android      # Sync web assets to Android project
+npx cap open android      # Open Android Studio to build the APK
+```
+
+> **Full step-by-step guide** → [`BUILDING_APK.md`](./BUILDING_APK.md)
 
 ---
 
-## 🔮 SECTION 13: FUTURE IMPROVEMENTS
+## 📡 API Endpoints
 
-We are constantly improving the Super App! Up next:
-1.  **Mobile App:** Build a native Android/iOS version using React Native or Expo.
-2.  **Kubernetes Scaling:** Dockerize all microservices and use Kubernetes to auto-scale individual services (e.g., scale up the Ride service during rush hour).
-3.  **Message Broker:** Replace direct HTTP Axios calls between microservices with **Apache Kafka** or **RabbitMQ** for better fault tolerance.
-4.  **Advanced AI Agents:** AI that can book rides or order food for you automatically based on text prompts.
+All requests go through the gateway at `http://localhost:5050/api`.
 
----
-
-## 🤝 SECTION 14: CONTRIBUTION GUIDE
-
-We welcome beginners and experts to contribute! 
-
-1. **Fork** the repository on GitHub.
-2. **Clone** your fork to your local machine.
-3. Create a **new branch**: `git checkout -b feature/my-new-feature`
-4. Make your changes and test them.
-5. **Commit** your changes: `git commit -m "Added a cool new feature"`
-6. **Push** to your branch: `git push origin feature/my-new-feature`
-7. Open a **Pull Request** on the main repository.
-
-If you find a bug, please open an Issue with steps to reproduce it!
+| Category | Method | Endpoint | Description |
+|----------|--------|----------|-------------|
+| **Auth** | POST | `/auth/signup` | Register new user |
+| **Auth** | POST | `/auth/login` | Login and get JWT |
+| **Auth** | GET | `/auth/google` | Google OAuth |
+| **Auth** | GET | `/auth/github` | GitHub OAuth |
+| **Chat** | POST | `/chats/message` | Send a message |
+| **Chat** | GET | `/chats/:chatId/messages` | Get chat history |
+| **Social** | GET | `/social/unified/feed` | Get social feed |
+| **Rides** | POST | `/rides/request` | Book a ride |
+| **Food** | GET | `/food/restaurants` | List restaurants |
+| **AI** | POST | `/ai/ask` | Ask the AI a question |
+| **Search** | GET | `/search?q=...` | Global search |
+| **Wallet** | GET | `/wallet/balance` | Get wallet balance |
+| **Marketplace** | GET | `/marketplace/listings` | Browse listings |
 
 ---
 
-## 📄 SECTION 15: LICENSE
+## 🚀 Deployment
 
-This project is licensed under the **MIT License**.
+### Frontend → [Vercel](https://vercel.com)
+1. Connect your GitHub repo on Vercel.
+2. Set **Root Directory** to `frontend`.
+3. Add environment variable: `NEXT_PUBLIC_API_URL = https://your-gateway.onrender.com/api`
+4. Deploy!
 
-You are free to use, modify, and distribute this software for personal or commercial purposes. See the `LICENSE` file for more details.
+### Backend → [Render](https://render.com) or [Railway](https://railway.app)
+1. Create one **Web Service** per microservice (start with `api-gateway` + core services).
+2. Set `MONGO_URI`, `JWT_SECRET`, and other vars in the dashboard.
+3. Copy the API Gateway live URL to your frontend env var.
+
+### Database → [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+1. Create a free cluster.
+2. Add database user + allow all IPs (`0.0.0.0/0`).
+3. Copy the connection string as `MONGO_URI`.
 
 ---
-*Happy Coding! ❤️ Built with Next.js & Node.js Microservices.*
+
+## 🤝 Contributing
+
+1. **Fork** this repository
+2. **Clone** your fork: `git clone https://github.com/YOUR_USERNAME/Super-App-Core.git`
+3. **Create a branch**: `git checkout -b feature/my-feature`
+4. **Make your changes** and test them
+5. **Commit**: `git commit -m "feat: add my feature"`
+6. **Push**: `git push origin feature/my-feature`
+7. **Open a Pull Request** on GitHub
+
+Found a bug? [Open an Issue](https://github.com/your-username/Super-App-Core/issues) with steps to reproduce.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — you are free to use, modify, and distribute it for personal or commercial purposes. See [`LICENSE`](./LICENSE) for details.
+
+---
+
+<div align="center">
+
+Built with ❤️ using **Next.js** · **Node.js** · **MongoDB** · **Socket.io** · **Google Gemini**
+
+*Made for India 🇮🇳*
+
+</div>
+

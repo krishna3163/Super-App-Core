@@ -41,7 +41,7 @@ export default function LoginPage() {
           console.error("Could not fetch profile", profileErr)
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed')
+      setError(err.message || 'Login failed')
     }
   }
 
