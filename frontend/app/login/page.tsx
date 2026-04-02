@@ -138,6 +138,12 @@ export default function LoginPage() {
             Sign up for free
           </Link>
         </p>
+        <p className="mt-3 text-center text-sm font-medium text-slate-400">
+          Or{' '}
+          <Link href="/login/qr" className="font-bold text-cyan-300 transition hover:text-cyan-200 hover:underline">
+            Scan QR code to log in
+          </Link>
+        </p>
       </div>
     </div>
   )

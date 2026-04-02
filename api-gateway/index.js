@@ -270,6 +270,18 @@ app.use('/api/business-dashboard', authenticateToken, createProxyMiddleware({
   ...proxyOptions
 }));
 
+app.use('/api/monetization', authenticateToken, createProxyMiddleware({
+  target: process.env.MONETIZATION_SERVICE_URL || 'http://localhost:5026',
+  pathRewrite: { '^/api/monetization': '' },
+  ...proxyOptions
+}));
+
+app.use('/api/developer', authenticateToken, createProxyMiddleware({
+  target: process.env.DEVELOPER_PLATFORM_SERVICE_URL || 'http://localhost:5038',
+  pathRewrite: { '^/api/developer': '' },
+  ...proxyOptions
+}));
+
 app.use(express.json());
 
 app.get('/', (req, res) => {

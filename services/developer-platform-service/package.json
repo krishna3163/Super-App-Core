@@ -1,7 +1,7 @@
 {
-  "name": "payment-service",
+  "name": "developer-platform-service",
   "version": "1.0.0",
-  "description": "UPI, Wallet, QR Payments, Fraud Detection Service",
+  "description": "SuperApp Developer Platform - Mini App SDK, Analytics, Revenue Sharing",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -15,6 +15,6 @@
     "helmet": "^7.1.0",
     "mongoose": "^7.6.3",
     "morgan": "^1.10.0",
-    "qrcode": "^1.5.4"
+    "express-rate-limit": "^7.1.5"
   }
 }
