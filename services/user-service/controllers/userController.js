@@ -162,7 +162,7 @@ const updateSettings = async (req, res, next) => {
     const settings = await UserSettings.findOneAndUpdate(
       { userId },
       { $set: update },
-      { upsert: true, new: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
     res.json({ status: 'success', data: settings, correlationId: req.correlationId });
   } catch (err) {
