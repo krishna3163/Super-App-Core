@@ -11,7 +11,7 @@ const nextConfig = {
     // Static export requires unoptimized images (Capacitor APK build)
     unoptimized: process.env.CAPACITOR_BUILD === '1',
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60,
+    minimumCacheTTL: 3600, // 1 hour in seconds
     remotePatterns: [
       {
         protocol: 'https',
@@ -29,6 +29,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'www.svgrepo.com',
       },
       {
@@ -43,26 +47,30 @@ const nextConfig = {
     optimizeCss: false,
   },
 
-  // Cache headers for static assets (web server only, not used in static export)
+  // Cache and security headers (web server only, not used in static export)
   async headers() {
     if (process.env.CAPACITOR_BUILD === '1') return [];
     return [
       {
+        // Security headers on all routes
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+        ],
+      },
+      {
+        // Cache static assets aggressively
         source: '/_next/static/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
       {
         source: '/icons/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=86400' },
         ],
       },
     ];

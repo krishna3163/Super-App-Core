@@ -7,12 +7,18 @@ const api = axios.create({
   timeout: 30000,
 })
 
-// ── In-memory hot cache (10-second deduplication) ──────────────────────────
+// ── In-memory hot cache (30-second deduplication) ──────────────────────────
 const memCache = new Map<string, { data: any; timestamp: number }>();
-const MEM_STALE_TIME = 10_000; // 10 seconds
+const MEM_STALE_TIME = 30_000; // 30 seconds — increased for faster page loads
 
 // ── Persistent offline cache TTL ─────────────────────────────────────────────
 const OFFLINE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+// ── Paths that should never be served from cache (real-time / write-sensitive)
+const NO_CACHE_PATTERNS = ['/notifications', '/chats', '/social/feed'];
+
+const isCacheable = (url: string) =>
+  !NO_CACHE_PATTERNS.some(p => url.includes(p));
 
 // ── Request interceptor — attach JWT ──────────────────────────────────────────
 api.interceptors.request.use(
@@ -58,25 +64,30 @@ api.interceptors.response.use(
 )
 
 // ── GET wrapper: mem-cache → network → IndexedDB offline fallback ─────────────
-const originalGet = api.get;
+const originalGet = api.get.bind(api);
 api.get = async (url: string, config?: any) => {
   const cacheKey = 'api:' + url + (config?.params ? JSON.stringify(config.params) : '');
 
-  // 1. Return from hot in-memory cache if still fresh (dedup rapid calls)
+  // 1. Skip cache entirely for real-time/write-sensitive endpoints
+  if (!isCacheable(url)) {
+    return originalGet(url, config);
+  }
+
+  // 2. Return from hot in-memory cache if still fresh (dedup rapid calls)
   const mem = memCache.get(cacheKey);
   if (mem && Date.now() - mem.timestamp < MEM_STALE_TIME) {
-    return { data: mem.data, status: 200, statusText: 'OK', headers: {}, config: config || {} } as any;
+    return { data: mem.data, status: 200, statusText: 'OK', headers: {}, config: config || {}, cached: true } as any;
   }
 
   try {
-    // 2. Network request
+    // 3. Network request
     const response = await originalGet(url, config);
     // Store in both caches on success
     memCache.set(cacheKey, { data: response.data, timestamp: Date.now() });
     saveOffline(cacheKey, response.data, OFFLINE_TTL).catch(() => null);
     return response;
   } catch (err: any) {
-    // 3. Offline fallback — serve IndexedDB data if network unavailable
+    // 4. Offline fallback — serve IndexedDB data if network unavailable
     const isNetworkError = !err.status || err.status === 0 || 
       (typeof navigator !== 'undefined' && !navigator.onLine);
     if (isNetworkError) {
@@ -87,6 +98,17 @@ api.get = async (url: string, config?: any) => {
       }
     }
     throw err;
+  }
+};
+
+// ── Expose cache invalidation so mutations can bust stale data ────────────────
+export const invalidateApiCache = (urlPattern?: string) => {
+  if (!urlPattern) {
+    memCache.clear();
+    return;
+  }
+  for (const key of memCache.keys()) {
+    if (key.includes(urlPattern)) memCache.delete(key);
   }
 };
 
