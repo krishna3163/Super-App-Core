@@ -4,6 +4,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 import connectDB from './config/db.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 
@@ -12,10 +14,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5032;
 
+app.set('trust proxy', 1);
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(morgan('dev'));
-app.use(express.json());
 
 // General rate limit: 100 requests per 15 minutes
 app.use(rateLimit({
@@ -36,6 +41,10 @@ app.use('/transfer', paymentLimiter);
 app.use('/qr/pay', paymentLimiter);
 app.use('/merchant/pay', paymentLimiter);
 app.use('/refund', paymentLimiter);
+
+app.use(express.json({ limit: '10kb' }));
+app.use(mongoSanitize());
+app.use(hpp());
 
 app.use('/', paymentRoutes);
 

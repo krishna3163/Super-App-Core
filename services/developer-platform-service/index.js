@@ -7,15 +7,22 @@ import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 import developerRoutes from './routes/developerRoutes.js';
 
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5038;
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(mongoSanitize());
+app.use(hpp());
 
 // Rate limiting: 100 requests per 15 minutes per IP
 const limiter = rateLimit({

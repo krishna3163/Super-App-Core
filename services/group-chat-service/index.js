@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5004;
 app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || true,
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true
 }));
 
@@ -65,7 +65,7 @@ const startServer = async () => {
 
   const io = new Server(server, {
     pingTimeout: 60000,
-    cors: { origin: '*' },
+    cors: { origin: process.env.CORS_ORIGIN || 'http://localhost:3000', credentials: true },
   });
 
   io.on('connection', (socket) => {
