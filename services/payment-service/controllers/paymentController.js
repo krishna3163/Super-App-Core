@@ -54,8 +54,16 @@ const assessFraudRisk = async (senderId, amount, deviceId, ipAddress) => {
 };
 
 /**
- * Generate a payment QR code for a given userId/UPI ID.
+ * Validate and coerce a monetary amount.
+ * Returns the numeric amount or null if invalid.
  */
+const validateAmount = (value) => {
+  const num = Number(value);
+  if (!Number.isFinite(num) || num <= 0) return null;
+  // Limit to 2 decimal places and maximum single transaction of 1,000,000
+  if (num > 1000000) return null;
+  return Math.round(num * 100) / 100;
+};
 const generatePaymentQR = async (userId, upiId, amount = null) => {
   const qrPayload = JSON.stringify({
     action: 'upi_payment',
@@ -131,10 +139,11 @@ export const getProfile = async (req, res) => {
 export const generateQRPayment = async (req, res) => {
   try {
     const receiverId = sanitizeId(req.headers['x-user-id'] || req.body.receiverId);
-    const { amount, description } = req.body;
+    const amount = validateAmount(req.body.amount);
+    const { description } = req.body;
 
     if (!receiverId) return res.status(400).json({ error: 'Invalid receiverId' });
-    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+    if (!amount) return res.status(400).json({ error: 'Invalid amount' });
 
     const receiverProfile = await PaymentProfile.findOne({ userId: receiverId });
     if (!receiverProfile) return res.status(404).json({ error: 'Receiver wallet not found' });
@@ -164,10 +173,11 @@ export const payViaQR = async (req, res) => {
   try {
     const senderId = sanitizeId(req.headers['x-user-id'] || req.body.senderId);
     const receiverId = sanitizeId(req.body.receiverId);
-    const { qrToken, amount, deviceId, ipAddress } = req.body;
+    const amount = validateAmount(req.body.amount);
+    const { qrToken, deviceId, ipAddress } = req.body;
 
     if (!senderId || !receiverId) return res.status(400).json({ error: 'Invalid sender or receiver' });
-    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+    if (!amount) return res.status(400).json({ error: 'Invalid amount' });
     if (senderId === receiverId) return res.status(400).json({ error: 'Cannot pay yourself' });
 
     // Fraud assessment
@@ -233,10 +243,11 @@ export const initiateTransfer = async (req, res) => {
   try {
     const senderId = sanitizeId(req.headers['x-user-id'] || req.body.senderId);
     const receiverId = sanitizeId(req.body.receiverId);
-    const { amount, description, deviceId, ipAddress } = req.body;
+    const amount = validateAmount(req.body.amount);
+    const { description, deviceId, ipAddress } = req.body;
     
     if (!senderId || !receiverId) return res.status(400).json({ error: 'Invalid sender or receiver' });
-    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+    if (!amount) return res.status(400).json({ error: 'Invalid amount' });
     if (senderId === receiverId) return res.status(400).json({ error: 'Cannot transfer to yourself' });
 
     const { riskScore, flagged } = await assessFraudRisk(senderId, amount, deviceId, ipAddress);
@@ -299,9 +310,9 @@ export const initiateTransfer = async (req, res) => {
 export const addMoney = async (req, res) => {
   try {
     const userId = sanitizeId(req.body.userId || req.headers['x-user-id']);
-    const { amount } = req.body;
+    const amount = validateAmount(req.body.amount);
     if (!userId) return res.status(400).json({ error: 'Invalid userId' });
-    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+    if (!amount) return res.status(400).json({ error: 'Invalid amount' });
 
     const profile = await PaymentProfile.findOne({ userId });
     if (!profile) return res.status(404).json({ error: 'Profile not found' });
@@ -469,10 +480,11 @@ export const merchantPayment = async (req, res) => {
   try {
     const senderId = sanitizeId(req.headers['x-user-id'] || req.body.senderId);
     const merchantId = sanitizeId(req.body.merchantId);
-    const { amount, description, orderId, deviceId, ipAddress } = req.body;
+    const amount = validateAmount(req.body.amount);
+    const { description, orderId, deviceId, ipAddress } = req.body;
 
     if (!senderId || !merchantId) return res.status(400).json({ error: 'Invalid sender or merchant' });
-    if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+    if (!amount) return res.status(400).json({ error: 'Invalid amount' });
 
     const { riskScore, flagged } = await assessFraudRisk(senderId, amount, deviceId, ipAddress);
 

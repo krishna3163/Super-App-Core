@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import apicache from 'apicache';
 import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 
@@ -53,8 +54,17 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  : ['http://localhost:3000'];
+
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS: origin not allowed'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-Id']
@@ -62,6 +72,40 @@ app.use(cors({
 
 app.use(morgan('dev'));
 app.use(cookieParser());
+
+// ==========================================
+// RATE LIMITING
+// ==========================================
+
+// Global rate limit: 500 requests per 15 minutes per IP
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests, please try again later.' },
+}));
+
+// Strict rate limit for AI endpoints: 20 per minute
+app.use('/api/ai', rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: { success: false, message: 'AI rate limit exceeded. Please wait before making more requests.' },
+}));
+
+// Strict rate limit for payment endpoints: 30 per minute
+app.use('/api/wallet', rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  message: { success: false, message: 'Too many payment requests. Please wait before trying again.' },
+}));
+
+// Auth endpoints: 20 per 15 minutes
+app.use('/api/auth', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { success: false, message: 'Too many authentication requests, please try again later.' },
+}));
 
 // ==========================================
 // PROXY SETTINGS
