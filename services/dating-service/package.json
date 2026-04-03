@@ -1,0 +1,20 @@
+{
+  "name": "dating-service",
+  "version": "1.0.0",
+  "description": "Super App Dating Service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "axios": "^1.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "mongoose": "^7.6.3",
+    "morgan": "^1.10.0"
+  }
+}
